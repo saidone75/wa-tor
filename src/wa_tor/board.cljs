@@ -6,13 +6,13 @@
 (defonce window-width  (.-innerWidth js/window))
 (defonce window-height  (.-innerHeight js/window))
 
-(defonce blocksize 20)
+(defonce blocksize 16)
 
 (def board (atom {}))
 
 (defonce state (reagent/atom {}))
 
-(swap! board assoc :w (quot (* .95 window-width) blocksize))
+(swap! board assoc :w (quot (* .90 window-width) blocksize))
 (swap! board assoc :h (quot (* .85 window-height) blocksize))
 
 (defn- block [id x y color]
@@ -21,9 +21,8 @@
           :y y
           :fill color
           ;;:on-click #(toggle id)
-          :width "18px"
-          :height "18px"
-          :rx "2px"
+          :width "14px"
+          :height "14px"
           }])
 
 (defn- draw-board []
@@ -45,12 +44,12 @@
                           (inc i))))]])))
 
 (defn update-board []
-  (let [prev-board (logic/sh-fi (:board @board))]
-    (swap! board assoc :board (logic/next-chronon @board))
-    (if (= prev-board (logic/sh-fi (:board @board)))
-      (let [area (* (:w @board) (:h @board))]
-        (js/setTimeout #(swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))) 5000)))))
-
+  (if (:start @state)
+    (let [prev-board (logic/sh-fi (:board @board))]
+      (time (swap! board assoc :board (logic/next-chronon @board)))
+      (if (= prev-board (logic/sh-fi (:board @board)))
+        (let [area (* (:w @board) (:h @board))]
+          (js/setTimeout #(swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))) 5000))))))
 
 (defn create-board []
   (if (nil? (:board @board))
@@ -60,6 +59,7 @@
       (swap! board assoc :fish-preg 5)
       (add-watch board :board #(draw-board))
       (let [area (* (:w @board) (:h @board))]
-      (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))))
-      (swap! state assoc :interval (js/setInterval update-board 250) :speed 1)))
+        (logic/populate-board @board (quot area 10) (quot area 10)))
+      (swap! state assoc :interval (js/setInterval update-board 1000) :speed 1)
+      (swap! state assoc :start true)))
   state)
