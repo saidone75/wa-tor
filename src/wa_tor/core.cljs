@@ -2,9 +2,10 @@
   (:require
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]
+   [reagent.dom :as rdom]
    [wa-tor.board :as board]))
 
-(defonce app-state (board/create-board))
+(defonce app-state (board/create-board!))
 
 (defn get-app-element []
   (gdom/getElement "app"))
@@ -14,7 +15,7 @@
    (:content @app-state)])
 
 (defn mount [el]
-  (reagent/render-component [board] el))
+  (rdom/render [board] el))
 
 (defn mount-app-element []
   (when-let [el (get-app-element)]
