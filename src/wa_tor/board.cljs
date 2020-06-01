@@ -43,7 +43,7 @@
                                                     :else "aqua")])
                           (inc i))))]])))
 
-(defn update-board []
+(defn- update-board! []
   (if (:start @state)
     (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
@@ -51,7 +51,7 @@
         (let [area (* (:w @board) (:h @board))]
           (js/setTimeout #(swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))) 5000))))))
 
-(defn create-board []
+(defn create-board! []
   (if (nil? (:board @board))
     (do
       (swap! board assoc :shark-energy 6)
@@ -61,5 +61,5 @@
       (let [area (* (:w @board) (:h @board))]
         (logic/populate-board @board (quot area 10) (quot area 10)))
       (swap! state assoc :start true)
-      (swap! state assoc :interval (js/setInterval update-board 250) :speed 1)))
+      (swap! state assoc :interval (js/setInterval update-board! 250) :speed 1)))
   state)
