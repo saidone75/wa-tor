@@ -54,9 +54,9 @@
 (defn create-board []
   (if (nil? (:board @board))
     (do
-      (swap! board assoc :shark-nrg 6)
-      (swap! board assoc :shark-preg 12)
-      (swap! board assoc :fish-preg 5)
+      (swap! board assoc :shark-energy 6)
+      (swap! board assoc :shark-breed 12)
+      (swap! board assoc :fish-breed 5)
       (add-watch board :board #(draw-board))
       (let [area (* (:w @board) (:h @board))]
         (logic/populate-board @board (quot area 10) (quot area 10)))

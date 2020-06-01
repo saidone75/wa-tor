@@ -31,7 +31,7 @@
 
 ;; populate board with n fishes and n sharks, randomly placed
 (defn populate-board [board nfishes nsharks]
-  (let [{w :w h :h shark-nrg :shark-nrg} board
+  (let [{w :w h :h shark-energy :shark-energy} board
         ;; take n fishes
         fishes (set (take nfishes (shuffle (range 0 (* w h)))))
         ;; take n sharks, avoiding squares already occupied
@@ -48,7 +48,7 @@
      (for [x (range 0 (* w h))]
        (cond
          (contains? fishes x) {:type 'fish :age 0}
-         (contains? sharks x) {:type 'shark :age 0 :energy shark-nrg}
+         (contains? sharks x) {:type 'shark :age 0 :energy shark-energy}
          :else nil)))))
 
 ;; retrieve sharks and fishes indices
@@ -65,13 +65,13 @@
 ;; move a single fish with index i and return an updated board
 (defn- move-fish [board i]
   (assoc board :board
-         (let [{board :board w :w h :h fish-preg :fish-preg} board
+         (let [{board :board w :w h :h fish-breed :fish-breed} board
                fish (nth board i)
                neighbours (neighbours i w h)
                ;; random nearby free square if any
                free-square (first (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get board %) neighbours)))))]
            (if (not (nil? free-square))
-             (if (> (:age fish) fish-preg)
+             (if (> (:age fish) fish-breed)
                ;; reproduce and move to a nearby square
                (assoc board i {:type 'fish :age 0} (first free-square) {:type 'fish :age 0})
                ;; move only
@@ -82,7 +82,7 @@
 ;; move a single shark with index i and return an updated board
 (defn- move-shark [board i]
   (assoc board :board
-         (let [{board :board w :w h :h shark-nrg :shark-nrg shark-preg :shark-preg} board
+         (let [{board :board w :w h :h shark-energy :shark-energy shark-breed :shark-breed} board
                shark (nth board i)
                neighbours (neighbours i w h)
                ;; random nearby fish if any
@@ -93,15 +93,15 @@
              ;; shark die from starvation
              (assoc board i nil)
              (if (not (nil? nearby-fish))
-               (if (> (:age shark) shark-preg)
+               (if (> (:age shark) shark-breed)
                  ;; reproduce and eat a nearby fish
-                 (assoc board i {:type 'shark :age 0 :energy shark-nrg} (first nearby-fish) (assoc shark :age (inc (:age shark)) :energy (inc (:energy shark))))
+                 (assoc board i {:type 'shark :age 0 :energy shark-energy} (first nearby-fish) (assoc shark :age (inc (:age shark)) :energy (inc (:energy shark))))
                  ;; eat a nearby fish
                  (assoc board i nil (first nearby-fish) (assoc shark :age (inc (:age shark)) :energy (inc (:energy shark)))))
                (if (not (nil? free-square))
-                 (if (> (:age shark) shark-preg)
+                 (if (> (:age shark) shark-breed)
                    ;; reproduce and move to a nearby square
-                   (assoc board i {:type 'shark :age 0 :energy shark-nrg} (first free-square) {:type 'shark :age 0 :energy (:energy shark)})
+                   (assoc board i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (:energy shark)})
                    ;; move only
                    (assoc board i nil (first free-square) (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))
                  ;; with no free squares around decrease energy only
