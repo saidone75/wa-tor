@@ -51,22 +51,28 @@
                                                     :else "aqua")])
                           (inc i))))]])))
 
+(defn- randomize-board []
+  (let [area (* (:w @board) (:h @board))]
+    (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10)))))
+
+(defn- clear-board []
+  (let [{w :w h :h} @board]
+    (swap! state assoc :start false)
+    (swap! board assoc :board (vec (take (* w h) (repeat nil))))))
+
 (defn- update-board! []
   (if (:start @state)
     (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
       (if (= prev-board (logic/sh-fi (:board @board)))
-        (do
-          (swap! state assoc :start false)
-          (let [area (* (:w @board) (:h @board))]
-            (js/setTimeout #(do
-                              (swap! state assoc :start true)
-                              (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10)))) 2000)))))))
+        (swap! state assoc :start false)))))
 
 (defn- keydown-handler [event]
   (if (.getElementById js/document "board")
     (cond
-      (= 32 event.keyCode) (swap! state assoc :start (not (:start @state))))))
+      (= 32 event.keyCode) (swap! state assoc :start (not (:start @state)))
+      (= 67 event.keyCode) (clear-board)
+      (= 82 event.keyCode) (randomize-board))))
 
 (defn create-board! []
   (if (nil? (:board @board))
