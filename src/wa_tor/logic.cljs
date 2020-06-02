@@ -107,6 +107,12 @@
                  ;; with no free squares around decrease energy only
                  (assoc board i (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark))))))))))
 
+(defn- move-creature [board i]
+  (if (= 'shark (:type (nth (:board board) i)))
+    (move-shark board i)
+    (move-fish board i))
+  )
+
 (defn next-chronon [board]
   (let [sh-fi (sh-fi (:board board))
         ;; sharks indices in random order
@@ -114,12 +120,8 @@
         ;; fishes indices in random order
         fishes (shuffle (last sh-fi))]
     (:board
-     ;; move all sharks in random order
+     ;; move all fishes and sharks in random order
      (reduce
-      move-shark
-      ;; move all fishes in random order
-      (reduce
-       move-fish
-       board
-       fishes)
-      sharks))))
+      move-creature
+      board
+      (shuffle (concat sh-fi))))))
