@@ -115,9 +115,10 @@
 (defn next-chronon [board]
   (let [sh-fi (sh-fi (:board board))
         ;; sharks indices in random order
-        sharks (shuffle (first sh-fi))
+        ;; sharks (shuffle (first sh-fi))
         ;; fishes indices in random order
-        fishes (shuffle (last sh-fi))]
+        ;;fishes (shuffle (last sh-fi))
+        ]
     (:board
      ;; move all creatures in random order
      (reduce

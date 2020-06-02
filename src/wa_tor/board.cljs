@@ -53,7 +53,12 @@
           (let [area (* (:w @board) (:h @board))]
             (js/setTimeout #(do
                               (swap! state assoc :start true)
-                              (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10)))) 5000)))))))
+                              (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10)))) 2000)))))))
+
+(defn- keydown-handler [event]
+  (if (.getElementById js/document "board")
+    (cond
+      (= 32 event.keyCode) (swap! state assoc :start (not (:start @state))))))
 
 (defn create-board! []
   (if (nil? (:board @board))
@@ -62,6 +67,7 @@
       (swap! board assoc :shark-breed 12)
       (swap! board assoc :fish-breed 5)
       (add-watch board :board #(draw-board))
+      (js/document.addEventListener "keydown" keydown-handler)
       (let [area (* (:w @board) (:h @board))]
         (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))))
       (swap! state assoc :start true)
