@@ -48,8 +48,12 @@
     (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
       (if (= prev-board (logic/sh-fi (:board @board)))
-        (let [area (* (:w @board) (:h @board))]
-          (js/setTimeout #(swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))) 5000))))))
+        (do
+          (swap! state assoc :start false)
+          (let [area (* (:w @board) (:h @board))]
+            (js/setTimeout #(do
+                              (swap! state assoc :start true)
+                              (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10)))) 5000)))))))
 
 (defn create-board! []
   (if (nil? (:board @board))
