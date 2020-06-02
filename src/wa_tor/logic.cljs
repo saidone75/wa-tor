@@ -110,8 +110,7 @@
 (defn- move-creature [board i]
   (if (= 'shark (:type (nth (:board board) i)))
     (move-shark board i)
-    (move-fish board i))
-  )
+    (move-fish board i)))
 
 (defn next-chronon [board]
   (let [sh-fi (sh-fi (:board board))
@@ -120,8 +119,8 @@
         ;; fishes indices in random order
         fishes (shuffle (last sh-fi))]
     (:board
-     ;; move all fishes and sharks in random order
+     ;; move all creatures in random order
      (reduce
       move-creature
       board
-      (shuffle (concat sh-fi))))))
+      (shuffle (flatten sh-fi))))))
