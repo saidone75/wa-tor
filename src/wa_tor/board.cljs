@@ -15,6 +15,9 @@
 (swap! board assoc :w (quot (* .90 window-width) blocksize))
 (swap! board assoc :h (quot (* .85 window-height) blocksize))
 
+(defn- toggle-modal []
+  (-> (.getElementById js/document "usage") (aget "classList") (.toggle "show-modal")))
+
 (defn- toggle [id]
   (if (not (:start @state))
     (let [type (:type (get (:board @board) id))]
@@ -22,6 +25,22 @@
         (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :energy (:shark-energy @board)}))
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
+
+(defn- modal []
+  [:div.modal {:id "usage"
+               :on-click #(toggle-modal)}
+   [:div.modal-content {:class (let [ratio (/ window-width window-height)]
+                                 (if (> ratio 1)
+                                   "modal-content-large"
+                                   "modal-content-small"))}
+    [:b "USAGE"] [:br]
+    "Pause the game to edit board by pressing spacebar" [:br]
+    "then click on a square to cycle between sea>fish>shark" [:br] [:br]
+    "Other commands:" [:br]
+    "\"c\" to clear board " [:b "*and*"] " pause" [:br]
+    "\"r\" to randomize board" [:br]
+    "\"shift\" to toggle this panel" [:br] [:br]
+    "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"]]])
 
 (defn- block [id x y color]
   [:rect {:id id
@@ -37,7 +56,7 @@
   (let [{w :w h :h board :board} @board]
     (swap! state assoc :content
            [:div.board {:id "board"}
-            ;;(modal)
+            (modal)
             [:svg.board {:width (* blocksize w) :height (* blocksize h)}
              (loop [board board blocks '() i 0]
                (if (empty? board) blocks
@@ -70,6 +89,7 @@
 (defn- keydown-handler [event]
   (if (.getElementById js/document "board")
     (cond
+      (= 16 event.keyCode) (toggle-modal)
       (= 32 event.keyCode) (swap! state assoc :start (not (:start @state)))
       (= 67 event.keyCode) (clear-board)
       (= 82 event.keyCode) (randomize-board))))

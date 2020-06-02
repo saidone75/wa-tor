@@ -1,11 +1,54 @@
-/* some style */
-.outer-div
-{
+body {
+    font-family: monospace;
+    color: darkslategray;
+    background-color: white;
+}
+
+.outer-div {
      padding: 10px;
      text-align: center;
 }
-.board
-{
+.board {
      display: inline-block;
      padding: 10px;
+}
+
+div.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+}
+
+div.modal-content {
+    position: absolute;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: aqua;
+    line-height: 1.6;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+div.modal-content a {
+    color: darkslategray;
+    text-decoration: underline;
+}
+
+div.modal-content-small {
+    width: 60%;
+}
+
+div.modal-content-large {
+    width: 25%;
+}
+
+div.show-modal {
+    opacity: 1;
+    visibility: visible;
 }
