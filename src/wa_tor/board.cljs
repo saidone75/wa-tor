@@ -26,7 +26,7 @@
           }])
 
 (defn- draw-board []
-  (let [{w :w h :h board (or :board :sboard)} @board]
+  (let [{w :w h :h board :board} @board]
     (swap! state assoc :content
            [:div.board {:id "board"}
             ;;(modal)
@@ -59,7 +59,7 @@
       (swap! board assoc :fish-breed 5)
       (add-watch board :board #(draw-board))
       (let [area (* (:w @board) (:h @board))]
-        (logic/populate-board @board (quot area 10) (quot area 10)))
+        (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))))
       (swap! state assoc :start true)
-      (swap! state assoc :interval (js/setInterval update-board! 250) :speed 1)))
+      (swap! state assoc :interval (js/setInterval update-board! 200) :speed 1)))
   state)
