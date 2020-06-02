@@ -15,12 +15,20 @@
 (swap! board assoc :w (quot (* .90 window-width) blocksize))
 (swap! board assoc :h (quot (* .85 window-height) blocksize))
 
+(defn- toggle [id]
+  (if (not (:start @state))
+    (let [type (:type (get (:board @board) id))]
+      (cond
+        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :energy (:shark-energy @board)}))
+        (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
+        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
+
 (defn- block [id x y color]
   [:rect {:id id
           :x x
           :y y
           :fill color
-          ;;:on-click #(toggle id)
+          :on-click #(toggle id)
           :width "14px"
           :height "14px"
           }])
