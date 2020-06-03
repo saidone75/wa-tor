@@ -12,8 +12,8 @@
 
 (defonce state (reagent/atom {}))
 
-(swap! board assoc :w (quot (* .90 window-width) blocksize))
-(swap! board assoc :h (quot (* .85 window-height) blocksize))
+(swap! board assoc :w (quot (* .92 window-width) blocksize))
+(swap! board assoc :h (quot (* .94 window-height) blocksize))
 
 (swap! board assoc :nfishes (quot (* (:w @board) (:h @board)) 10))
 (swap! board assoc :nsharks (quot (* (:w @board) (:h @board)) 10))
@@ -30,7 +30,8 @@
   (-> (.getElementById js/document "usage") (aget "classList") (.toggle "show-modal")))
 
 (defn- toggle [id]
-  (if (not (:start @state))
+  (if (:start @state)
+    (toggle-modal)
     (let [type (:type (get (:board @board) id))]
       (cond
         (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :energy (:shark-energy @board)}))
@@ -53,8 +54,10 @@
     [:span {:class "close-button"
             :onClick #(toggle-modal)} "[X]"]
     [:b "USAGE"] [:br]
-    "Pause the game to edit board by pressing spacebar" [:br]
-    "then click on a square to cycle between sea>fish>shark" [:br] [:br]
+    "Pause the game to edit board, either by:" [:br]
+    "pressing spacebar" [:br]
+    "or" [:br]
+    "tapping with two fingers" [:br] [:br]
     [:div
      "Number of fishes: " [:b (:nfishes @board)] [:br]
      [slider :nfishes (:nfishes @board) 0 (- (* (:w @board) (:h @board)) (:nsharks @board))]]
@@ -71,8 +74,8 @@
      "Shark energy: " [:b (:shark-energy @board)] [:br]
      [slider :shark-energy (:shark-energy @board) 1 20]]
     "Other commands:" [:br]
-    "\"c\" to clear board " [:b "*and*"] " pause" [:br]
-    "\"r\" to randomize board" [:br]
+    "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
+    "\"r\" or swipe right to randomize board" [:br]
     "\"h\" to toggle this panel" [:br]
     [:hr]
     "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"] [:br]
@@ -129,11 +132,34 @@
       (= 67 event.keyCode) (clear-board)
       (= 82 event.keyCode) (randomize-board))))
 
+(defonce touchstart {})
+(defonce swipe-threshold (/ window-width 3))
+(defonce time-threshold {:min 180 :max 1000})
+
+(defn- touchstart-handler [event]
+  (if (.getElementById js/document "board")
+    (cond
+      (= 2 event.touches.length) (swap! state assoc :start (not (:start @state)))
+      :else (set! touchstart {:x (-> event.changedTouches (aget 0) (aget "pageX"))
+                              :t (.getTime (js/Date.))}))))
+
+(defn- touchend-handler [event]
+  (let [touchend {:x (-> event.changedTouches (aget 0) (aget "pageX"))
+                  :t (.getTime (js/Date.))}
+        distance (- (:x touchend) (:x touchstart))
+        time (- (:t touchend) (:t touchstart))]
+    (if (and (> time (:min time-threshold)) (< time (:max time-threshold)))
+      (cond
+        (< distance (* -1 swipe-threshold)) (clear-board)
+        (> distance swipe-threshold) (randomize-board)))))
+
 (defn create-board! []
   (if (nil? (:board @board))
     (do
       (add-watch board :board #(draw-board))
       (js/document.addEventListener "keydown" keydown-handler)
+      (js/document.addEventListener "touchstart" touchstart-handler)
+      (js/document.addEventListener "touchend" touchend-handler)      
       (let [area (* (:w @board) (:h @board))]
         (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))))
       (swap! state assoc :start true)
