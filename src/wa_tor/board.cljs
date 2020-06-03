@@ -76,11 +76,11 @@
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
     "\"r\" or swipe right to randomize board" [:br]
-    "\"h\" to toggle this panel" [:br]
+    "\"h\" or swipe up to toggle this panel" [:br]
     [:hr]
     "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
-    "Copyright (c) 2020 Saidone" [:br]
+    "Copyright (c) 2020 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
 (defn- block [id x y color]
@@ -141,17 +141,22 @@
     (cond
       (= 2 event.touches.length) (swap! state assoc :start (not (:start @state)))
       :else (set! touchstart {:x (-> event.changedTouches (aget 0) (aget "pageX"))
+                              :y (-> event.changedTouches (aget 0) (aget "pageY"))
                               :t (.getTime (js/Date.))}))))
 
 (defn- touchend-handler [event]
   (let [touchend {:x (-> event.changedTouches (aget 0) (aget "pageX"))
+                  :y (-> event.changedTouches (aget 0) (aget "pageY"))
                   :t (.getTime (js/Date.))}
-        distance (- (:x touchend) (:x touchstart))
+        xdistance (- (:x touchend) (:x touchstart))
+        ydistance (- (:y touchend) (:y touchstart))
         time (- (:t touchend) (:t touchstart))]
+    (js/console.log ydistance)
     (if (and (> time (:min time-threshold)) (< time (:max time-threshold)))
       (cond
-        (< distance (* -1 swipe-threshold)) (clear-board)
-        (> distance swipe-threshold) (randomize-board)))))
+        (< xdistance (* -1 swipe-threshold)) (clear-board)
+        (> xdistance swipe-threshold) (randomize-board)
+        (< ydistance (* -1 swipe-threshold)) (toggle-modal)))))
 
 (defn create-board! []
   (if (nil? (:board @board))
@@ -160,8 +165,7 @@
       (js/document.addEventListener "keydown" keydown-handler)
       (js/document.addEventListener "touchstart" touchstart-handler)
       (js/document.addEventListener "touchend" touchend-handler)      
-      (let [area (* (:w @board) (:h @board))]
-        (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10))))
+      (swap! board assoc :board (logic/populate-board @board (:nfishes @board) (:nsharks @board)))
       (swap! state assoc :start true)
       (swap! state assoc :interval (js/setInterval update-board! 200) :speed 1)))
   state)
