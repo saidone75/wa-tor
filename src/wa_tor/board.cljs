@@ -15,6 +15,17 @@
 (swap! board assoc :w (quot (* .90 window-width) blocksize))
 (swap! board assoc :h (quot (* .85 window-height) blocksize))
 
+(swap! board assoc :nfishes (quot (* (:w @board) (:h @board)) 10))
+(swap! board assoc :nsharks (quot (* (:w @board) (:h @board)) 10))
+
+(swap! board assoc :fish-breed 5)
+(swap! board assoc :shark-energy 6)
+(swap! board assoc :shark-breed 12)
+
+(defn- randomize-board []
+  (let [area (* (:w @board) (:h @board))]
+    (swap! board assoc :board (logic/populate-board @board (:nfishes @board) (:nsharks @board)))))
+
 (defn- toggle-modal []
   (-> (.getElementById js/document "usage") (aget "classList") (.toggle "show-modal")))
 
@@ -26,9 +37,15 @@
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
+(defn slider [param value min max]
+  [:input {:type "range" :value value :min min :max max
+           :style {:width "80%"}
+           :onChange (fn [e]
+                       (let [new-value (js/parseInt (.. e -target -value))]
+                         (swap! board assoc param new-value)))}])
+
 (defn- modal []
-  [:div.modal {:id "usage"
-               :on-click #(toggle-modal)}
+  [:div.modal {:id "usage"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
                                  (if (> ratio 1)
                                    "modal-content-large"
@@ -36,10 +53,26 @@
     [:b "USAGE"] [:br]
     "Pause the game to edit board by pressing spacebar" [:br]
     "then click on a square to cycle between sea>fish>shark" [:br] [:br]
+    "Initial parameters:" [:br] [:br]
+    [:div
+     "Number of fishes: " [:b (:nfishes @board)]
+     [slider :nfishes (:nfishes @board) 0 (- (* (:w @board) (:h @board)) (:nsharks @board))]]
+    [:div
+     "Number of sharks: " [:b (:nsharks @board)]
+     [slider :nsharks (:nsharks @board) 0 (- (* (:w @board) (:h @board)) (:nfishes @board))]]
+    [:div
+     "Fish breed time: " [:b (:fish-breed @board)] " chronons"
+     [slider :fish-breed (:fish-breed @board) 1 20]]
+    [:div
+     "Shark breed time: " [:b (:shark-breed @board)] " chronons"
+     [slider :shark-breed (:shark-breed @board) 1 20]]
+    [:div
+     "Shark energy (lifespan): " (:shark-energy @board) " chronons"
+     [slider :shark-energy (:shark-energy @board) 1 20]]
     "Other commands:" [:br]
     "\"c\" to clear board " [:b "*and*"] " pause" [:br]
     "\"r\" to randomize board" [:br]
-    "\"shift\" to toggle this panel" [:br] [:br]
+    "\"h\" to toggle this panel" [:br] [:br]
     "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"]]])
 
 (defn- block [id x y color]
@@ -70,10 +103,6 @@
                                                     :else "aqua")])
                           (inc i))))]])))
 
-(defn- randomize-board []
-  (let [area (* (:w @board) (:h @board))]
-    (swap! board assoc :board (logic/populate-board @board (quot area 10) (quot area 10)))))
-
 (defn- clear-board []
   (let [{w :w h :h} @board]
     (swap! state assoc :start false)
@@ -89,7 +118,7 @@
 (defn- keydown-handler [event]
   (if (.getElementById js/document "board")
     (cond
-      (= 16 event.keyCode) (toggle-modal)
+      (= 72 event.keyCode) (toggle-modal)
       (= 32 event.keyCode) (swap! state assoc :start (not (:start @state)))
       (= 67 event.keyCode) (clear-board)
       (= 82 event.keyCode) (randomize-board))))
@@ -97,9 +126,6 @@
 (defn create-board! []
   (if (nil? (:board @board))
     (do
-      (swap! board assoc :shark-energy 6)
-      (swap! board assoc :shark-breed 12)
-      (swap! board assoc :fish-breed 5)
       (add-watch board :board #(draw-board))
       (js/document.addEventListener "keydown" keydown-handler)
       (let [area (* (:w @board) (:h @board))]
