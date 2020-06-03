@@ -5,12 +5,13 @@ body {
 }
 
 .outer-div {
-     padding: 10px;
-     text-align: center;
+    padding: 10px;
+    text-align: center;
 }
+
 .board {
-     display: inline-block;
-     padding: 10px;
+    display: inline-block;
+    padding: 10px;
 }
 
 div.modal {
@@ -46,6 +47,12 @@ div.modal-content-small {
 
 div.modal-content-large {
     width: 40%;
+}
+
+.close-button {
+    float: right;
+    text-align: center;
+    cursor: pointer;
 }
 
 div.show-modal {

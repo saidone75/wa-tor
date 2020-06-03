@@ -50,6 +50,8 @@
                                  (if (> ratio 1)
                                    "modal-content-large"
                                    "modal-content-small"))}
+    [:span {:class "close-button"
+            :onClick #(toggle-modal)} "[X]"]
     [:b "USAGE"] [:br]
     "Pause the game to edit board by pressing spacebar" [:br]
     "then click on a square to cycle between sea>fish>shark" [:br] [:br]
@@ -115,7 +117,8 @@
   (if (:start @state)
     (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
-      (if (= prev-board (logic/sh-fi (:board @board)))
+      (if (and (= prev-board (logic/sh-fi (:board @board)))
+               (not (= (count (first prev-board)) (* (:w @board) (:h @board)))))
         (swap! state assoc :start false)))))
 
 (defn- keydown-handler [event]
