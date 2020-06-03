@@ -72,8 +72,12 @@
     "Other commands:" [:br]
     "\"c\" to clear board " [:b "*and*"] " pause" [:br]
     "\"r\" to randomize board" [:br]
-    "\"h\" to toggle this panel" [:br] [:br]
-    "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"]]])
+    "\"h\" to toggle this panel" [:br]
+    [:hr]
+    "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"] [:br]
+    "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
+    "Copyright (c) 2020 Saidone" [:br] 
+    "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
 (defn- block [id x y color]
   [:rect {:id id

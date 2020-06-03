@@ -41,11 +41,11 @@ div.modal-content a {
 }
 
 div.modal-content-small {
-    width: 60%;
+    width: 80%;
 }
 
 div.modal-content-large {
-    width: 25%;
+    width: 50%;
 }
 
 div.show-modal {
