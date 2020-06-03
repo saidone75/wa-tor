@@ -53,21 +53,20 @@
     [:b "USAGE"] [:br]
     "Pause the game to edit board by pressing spacebar" [:br]
     "then click on a square to cycle between sea>fish>shark" [:br] [:br]
-    "Initial parameters:" [:br] [:br]
     [:div
-     "Number of fishes: " [:b (:nfishes @board)]
+     "Number of fishes: " [:b (:nfishes @board)] [:br]
      [slider :nfishes (:nfishes @board) 0 (- (* (:w @board) (:h @board)) (:nsharks @board))]]
     [:div
-     "Number of sharks: " [:b (:nsharks @board)]
+     "Number of sharks: " [:b (:nsharks @board)] [:br]
      [slider :nsharks (:nsharks @board) 0 (- (* (:w @board) (:h @board)) (:nfishes @board))]]
     [:div
-     "Fish breed time: " [:b (:fish-breed @board)] " chronons"
+     "Fish breed time: " [:b (:fish-breed @board)] " chronons" [:br]
      [slider :fish-breed (:fish-breed @board) 1 20]]
     [:div
-     "Shark breed time: " [:b (:shark-breed @board)] " chronons"
+     "Shark breed time: " [:b (:shark-breed @board)] " chronons" [:br]
      [slider :shark-breed (:shark-breed @board) 1 20]]
     [:div
-     "Shark energy (lifespan): " (:shark-energy @board) " chronons"
+     "Shark energy: " [:b (:shark-energy @board)] [:br]
      [slider :shark-energy (:shark-energy @board) 1 20]]
     "Other commands:" [:br]
     "\"c\" to clear board " [:b "*and*"] " pause" [:br]
@@ -76,7 +75,7 @@
     [:hr]
     "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
-    "Copyright (c) 2020 Saidone" [:br] 
+    "Copyright (c) 2020 Saidone" [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
 (defn- block [id x y color]
