@@ -30,7 +30,8 @@ div.modal-content {
     border-radius: 8px;
     padding: 16px;
     background-color: aqua;
-    line-height: 1.6;
+    font-size: 0.9em;
+    line-height: 1.4;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -42,7 +43,7 @@ div.modal-content a {
 }
 
 div.modal-content-small {
-    width: 80%;
+    width: 75%;
 }
 
 div.modal-content-large {
