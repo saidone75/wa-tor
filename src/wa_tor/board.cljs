@@ -53,10 +53,12 @@
     [:span {:class "close-button"
             :onClick #(toggle-modal)} "[X]"]
     [:b "USAGE"] [:br]
-    "Pause the game to edit board, either by:" [:br]
+    "Pause the game to edit board, either by" [:br]
     "pressing spacebar" [:br]
     "or" [:br]
     "tapping with two fingers" [:br] [:br]
+    "click on a square to cycle between" [:br]
+    "sea >>> fish >>> shark" [:br] [:br]
     [:div
      "Number of fishes: " [:b (:nfishes @board)] [:br]
      [slider :nfishes (:nfishes @board) 0 (- (* (:w @board) (:h @board)) (:nsharks @board))]]
