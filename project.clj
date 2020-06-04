@@ -1,8 +1,8 @@
 (defproject wa-tor "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :description "A population dynamics simulation devised by A.K. Dewdney."
+  :url "http://wa-tor.saidone.org"
+  :license {:name "MIT"
+            :url "https://raw.githubusercontent.com/saidone75/wa-tor/master/LICENSE"}
 
   :min-lein-version "2.7.1"
 
@@ -20,4 +20,3 @@
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.7"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]
                    }})
-
