@@ -102,13 +102,13 @@
                (if (empty? board)
                  blocks
                  (recur (rest board)
-                        (let [i (key (first board))]
-                          (conj blocks ^{:key i} [block i
-                                                  (* blocksize (mod i w))
-                                                  (* blocksize (quot i w))
+                        (let [k (key (first board)) v (val (first board))]
+                          (conj blocks ^{:key k} [block k
+                                                  (* blocksize (mod k w))
+                                                  (* blocksize (quot k w))
                                                   (cond
-                                                    (= 'fish (:type (val (first board)))) "gold"
-                                                    (= 'shark (:type (val (first board)))) "lightslategray"
+                                                    (= 'fish (:type v)) "gold"
+                                                    (= 'shark (:type v)) "lightslategray"
                                                     :else "aqua")])))))]])))
 
 (defn- clear-board []

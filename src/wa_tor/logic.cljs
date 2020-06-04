@@ -3,6 +3,7 @@
 (def board (atom (array-map)))
 (def state (atom {}))
 (def already-moved (atom #{}))
+
 ;; calculate vector index from coords
 (defn- compute-index [x y w]
   (+ x (* y w)))
@@ -67,7 +68,7 @@
        (if (= 'shark (:type (val (first board)))) (conj sharks i) sharks)
        (if (= 'fish (:type (val (first board)))) (conj fishes i) fishes)))))
 
-;; move a single fish with index i and return an updated board
+;; move a single fish with index i
 (defn- move-fish [i]
   (let [{w :w h :h fish-breed :fish-breed} @state
         fish (get @board i)
@@ -87,7 +88,7 @@
       ;; with no free squares around increase age only
       (swap! board assoc i (update fish :age inc)))))
 
-;; move a single shark with index i and return an updated board
+;; move a single shark with index i
 (defn- move-shark [i]
   (let [{w :w h :h shark-energy :shark-energy shark-breed :shark-breed} @state
         shark (get @board i)
@@ -110,7 +111,7 @@
         (if (not (nil? free-square))
           (if (> (:age shark) shark-breed)
             ;; reproduce and move to a nearby square
-            (do (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (:energy shark)})
+            (do (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (dec (:energy shark))})
                 (swap! already-moved conj (first free-square)))
             ;; move only
             (do (swap! board assoc i nil (first free-square) (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark))))
@@ -118,12 +119,14 @@
           ;; with no free squares around decrease energy only
           (swap! board assoc i (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))))))
 
+;; move creature on square i if not already moved on current chronon
 (defn- move-creature [i]
   (if (nil? (get @already-moved i))
     (if (= 'shark (:type (get @board i)))
       (move-shark i)
       (move-fish i))))
 
+;; compute board for next chronon
 (defn next-chronon [b]
   (do
     (reset! state (dissoc b :board))
