@@ -1,5 +1,8 @@
 (ns wa-tor.logic)
 
+(def board (atom (array-map)))
+(def state (atom {}))
+(def already-moved (atom #{}))
 ;; calculate vector index from coords
 (defn- compute-index [x y w]
   (+ x (* y w)))
@@ -30,9 +33,8 @@
      (compute-index (:x coords) (incy (:y coords)) w)]))
 
 ;; populate board with n fishes and n sharks, randomly placed
-(defn populate-board [board nfishes nsharks]
-  (let [{w :w h :h shark-energy :shark-energy} board
-        ;; take n fishes
+(defn populate-board [w h nfishes nsharks shark-energy]
+  (let [;; take n fishes
         fishes (set (take nfishes (shuffle (range 0 (* w h)))))
         ;; take n sharks, avoiding squares already occupied
         sharks
@@ -44,12 +46,15 @@
                    (if (contains? fishes (first candidates))
                      sharks
                      (conj sharks (first candidates))))))]
-    (vec
-     (for [x (range 0 (* w h))]
-       (cond
-         (contains? fishes x) {:type 'fish :age 0}
-         (contains? sharks x) {:type 'shark :age 0 :energy shark-energy}
-         :else nil)))))
+    (loop [i 0]
+      (if (= i (* w h))
+        @board
+        (do
+          (cond
+            (contains? fishes i) (swap! board assoc i {:type 'fish :age 0})
+            (contains? sharks i) (swap! board assoc i {:type 'shark :age 0 :energy shark-energy})
+            :else (swap! board assoc i nil))
+          (recur (inc i)))))))
 
 ;; retrieve sharks and fishes indices
 (defn sh-fi [board]
@@ -59,69 +64,75 @@
       (recur
        (rest board)
        (inc i)
-       (if (= 'shark (:type (first board))) (conj sharks i) sharks)
-       (if (= 'fish (:type (first board))) (conj fishes i) fishes)))))
+       (if (= 'shark (:type (val (first board)))) (conj sharks i) sharks)
+       (if (= 'fish (:type (val (first board)))) (conj fishes i) fishes)))))
 
 ;; move a single fish with index i and return an updated board
-(defn- move-fish [board i]
-  (assoc board :board
-         (let [{board :board w :w h :h fish-breed :fish-breed} board
-               fish (nth board i)
-               neighbours (neighbours i w h)
-               ;; random nearby free square if any
-               free-square (first (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get board %) neighbours)))))]
-           (if (not (nil? free-square))
-             (if (> (:age fish) fish-breed)
-               ;; reproduce and move to a nearby square
-               (assoc board i {:type 'fish :age 0} (first free-square) {:type 'fish :age 0})
-               ;; move only
-               (assoc board i nil (first free-square) (update fish :age inc)))
-             ;; with no free squares around increase age only
-             (assoc board i (update fish :age inc))))))
+(defn- move-fish [i]
+  (let [{w :w h :h fish-breed :fish-breed} @state
+        fish (get @board i)
+        neighbours (neighbours i w h)
+        ;; random nearby free square if any
+        free-square (first (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
+    (if (not (nil? free-square))
+      (if (> (:age fish) fish-breed)
+        ;; reproduce and move to a nearby square
+        (do
+          (swap! board assoc i {:type 'fish :age 0} (first free-square) {:type 'fish :age 0})
+          (swap! already-moved conj (first free-square)))
+        ;; move only
+        (do
+          (swap! board assoc i nil (first free-square) (update fish :age inc))
+          (swap! already-moved conj (first free-square))))
+      ;; with no free squares around increase age only
+      (swap! board assoc i (update fish :age inc)))))
 
 ;; move a single shark with index i and return an updated board
-(defn- move-shark [board i]
-  (assoc board :board
-         (let [{board :board w :w h :h shark-energy :shark-energy shark-breed :shark-breed} board
-               shark (nth board i)
-               neighbours (neighbours i w h)
-               ;; random nearby fish if any
-               nearby-fish (first (shuffle (filter #(= 'fish (:type (val %))) (zipmap neighbours (map #(get board %) neighbours)))))
-               ;; random nearby free square if any
-               free-square (first (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get board %) neighbours)))))]
-           (if (<= (:energy shark) 0)
-             ;; shark die from starvation
-             (assoc board i nil)
-             (if (not (nil? nearby-fish))
-               (if (> (:age shark) shark-breed)
-                 ;; reproduce and eat a nearby fish
-                 (assoc board i {:type 'shark :age 0 :energy shark-energy} (first nearby-fish) (assoc shark :age (inc (:age shark)) :energy (inc (:energy shark))))
-                 ;; eat a nearby fish
-                 (assoc board i nil (first nearby-fish) (assoc shark :age (inc (:age shark)) :energy (inc (:energy shark)))))
-               (if (not (nil? free-square))
-                 (if (> (:age shark) shark-breed)
-                   ;; reproduce and move to a nearby square
-                   (assoc board i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (:energy shark)})
-                   ;; move only
-                   (assoc board i nil (first free-square) (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))
-                 ;; with no free squares around decrease energy only
-                 (assoc board i (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark))))))))))
+(defn- move-shark [i]
+  (let [{w :w h :h shark-energy :shark-energy shark-breed :shark-breed} @state
+        shark (get @board i)
+        neighbours (neighbours i w h)
+        ;; random nearby fish if any
+        nearby-fish (first (shuffle (filter #(= 'fish (:type (val %))) (zipmap neighbours (map #(get @board %) neighbours)))))
+        ;; random nearby free square if any
+        free-square (first (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
+    (if (<= (:energy shark) 0)
+      ;; shark die from starvation
+      (swap! board assoc i nil)
+      (if (not (nil? nearby-fish))
+        (if (> (:age shark) shark-breed)
+          ;; reproduce and eat a nearby fish
+          (do (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first nearby-fish) {:type 'shark :age 0 :energy shark-energy})
+              (swap! already-moved conj (first nearby-fish)))
+          ;; eat a nearby fish
+          (do (swap! board assoc i nil (first nearby-fish) (assoc shark :age (inc (:age shark)) :energy (inc (:energy shark))))
+              (swap! already-moved conj (first nearby-fish))))
+        (if (not (nil? free-square))
+          (if (> (:age shark) shark-breed)
+            ;; reproduce and move to a nearby square
+            (do (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (:energy shark)})
+                (swap! already-moved conj (first free-square)))
+            ;; move only
+            (do (swap! board assoc i nil (first free-square) (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark))))
+                (swap! already-moved conj (first free-square))))
+          ;; with no free squares around decrease energy only
+          (swap! board assoc i (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))))))
 
-(defn- move-creature [board i]
-  (if (= 'shark (:type (nth (:board board) i)))
-    (move-shark board i)
-    (move-fish board i)))
+(defn- move-creature [i]
+  (if (nil? (get @already-moved i))
+    (if (= 'shark (:type (get @board i)))
+      (move-shark i)
+      (move-fish i))))
 
-(defn next-chronon [board]
-  (let [sh-fi (sh-fi (:board board))
-        ;; sharks indices in random order
-        ;; sharks (shuffle (first sh-fi))
-        ;; fishes indices in random order
-        ;;fishes (shuffle (last sh-fi))
-        ]
-    (:board
-     ;; move all creatures in random order
-     (reduce
-      move-creature
-      board
-      (shuffle (flatten sh-fi))))))
+(defn next-chronon [b]
+  (do
+    (reset! state (dissoc b :board))
+    (reset! board (:board b))
+    (reset! already-moved #{})
+    (loop [creatures-to-move (shuffle (map key (filter #(not (nil? (val %))) @board)))]
+      (if (empty? creatures-to-move)
+        @board
+        (do
+          (move-creature (first creatures-to-move))
+          (swap! already-moved conj (first creatures-to-move))
+          (recur (rest creatures-to-move)))))))
