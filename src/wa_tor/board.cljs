@@ -8,19 +8,21 @@
 
 (defonce blocksize 16)
 
-(def board (atom {}))
+(defonce board (atom {}))
 
 (defonce state (reagent/atom {}))
 
 (swap! board assoc :w (quot (* .92 window-width) blocksize))
 (swap! board assoc :h (quot (* .94 window-height) blocksize))
 
-(swap! board assoc :nfishes (quot (* (:w @board) (:h @board)) 8))
-(swap! board assoc :nsharks (quot (* (:w @board) (:h @board)) 10))
+(defonce area (* (:w @board) (:h @board)))
+
+(swap! board assoc :nfishes (quot area 8))
+(swap! board assoc :nsharks (quot area 10))
 
 (swap! board assoc :fish-breed 6)
-(swap! board assoc :shark-breed 10)
-(swap! board assoc :shark-energy 6)
+(swap! board assoc :shark-breed 9)
+(swap! board assoc :shark-energy 7)
 
 (defn- randomize-board []
   (swap! board assoc :board (logic/populate-board (:w @board) (:h @board) (:nfishes @board) (:nsharks @board) (:shark-energy @board))))
@@ -44,6 +46,12 @@
                        (let [new-value (js/parseInt (.. e -target -value))]
                          (swap! board assoc param new-value)))}])
 
+(defn- check-breed []
+  (if (> (:shark-energy @board) (inc (:shark-breed @board)))
+    (swap! board assoc :shark-energy (inc (:shark-breed @board)))))
+
+(add-watch board :shark-breed #(check-breed))
+
 (defn- modal []
   [:div.modal {:id "usage"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
@@ -61,10 +69,10 @@
     "sea >>> fish >>> shark" [:br] [:br]
     [:div
      "Number of fishes: " [:b (:nfishes @board)] [:br]
-     [slider :nfishes (:nfishes @board) 0 (- (* (:w @board) (:h @board)) (:nsharks @board))]]
+     [slider :nfishes (:nfishes @board) 0 (- area (:nsharks @board))]]
     [:div
      "Number of sharks: " [:b (:nsharks @board)] [:br]
-     [slider :nsharks (:nsharks @board) 0 (- (* (:w @board) (:h @board)) (:nfishes @board))]]
+     [slider :nsharks (:nsharks @board) 0 (- area (:nfishes @board))]]
     [:div
      "Fish breed time: " [:b (:fish-breed @board)] " chronons" [:br]
      [slider :fish-breed (:fish-breed @board) 1 20]]
@@ -114,11 +122,10 @@
                                                     :else "aqua")])))))]])))
 
 (defn- clear-board []
-  (let [{w :w h :h} @board]
-    (swap! state assoc :start false)
-    (swap! board assoc :board
-           (apply merge (for [x (range (* w h))]
-                          (array-map x nil))))))
+  (swap! state assoc :start false)
+  (swap! board assoc :board
+         (apply merge (for [x (range area)]
+                        (array-map x nil)))))
 
 (defn- update-board! []
   (if (:start @state)
@@ -126,7 +133,7 @@
       (swap! board assoc :board (logic/next-chronon @board))
       (if (and (= (first prev-board) (first (logic/sh-fi (:board @board))))
                (= (last prev-board) (last (logic/sh-fi (:board @board))))
-               (not (= (count (first prev-board)) (* (:w @board) (:h @board)))))
+               (not (= (count (first prev-board)) area)))
         (swap! state assoc :start false)))))
 
 (defn- keydown-handler [event]
@@ -172,6 +179,5 @@
       (js/document.addEventListener "touchend" touchend-handler)      
       (randomize-board)
       (swap! state assoc :start true)
-      (swap! state assoc :interval (js/setInterval update-board! 200))
-      ))
+      (swap! state assoc :interval (js/setInterval update-board! 200))))
   state)
