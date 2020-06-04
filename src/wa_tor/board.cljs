@@ -120,9 +120,10 @@
 
 (defn- update-board! []
   (if (:start @state)
-    (let [prev-board (:board @board)]
+    (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
-      (if (and (= prev-board (:board @board))
+      (if (and (= (first prev-board) (first (logic/sh-fi (:board @board))))
+               (= (last prev-board) (last (logic/sh-fi (:board @board))))
                (not (= (count (first prev-board)) (* (:w @board) (:h @board)))))
         (swap! state assoc :start false)))))
 
