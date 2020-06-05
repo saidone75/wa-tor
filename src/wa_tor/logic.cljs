@@ -78,13 +78,9 @@
     (if (not (nil? free-square))
       (if (> (:age fish) fish-breed)
         ;; reproduce and move to a nearby square
-        (do
-          (swap! board assoc i {:type 'fish :age 0} (first free-square) {:type 'fish :age 0})
-          (swap! already-moved conj (first free-square)))
+        (swap! board assoc i {:type 'fish :age 0} (first free-square) {:type 'fish :age 0})
         ;; move only
-        (do
-          (swap! board assoc i nil (first free-square) (update fish :age inc))
-          (swap! already-moved conj (first free-square))))
+        (swap! board assoc i nil (first free-square) (update fish :age inc)))
       ;; with no free squares around increase age only
       (swap! board assoc i (update fish :age inc)))))
 
@@ -137,5 +133,4 @@
         @board
         (do
           (move-creature (first creatures-to-move))
-          (swap! already-moved conj (first creatures-to-move))
           (recur (rest creatures-to-move)))))))
