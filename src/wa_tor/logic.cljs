@@ -107,11 +107,9 @@
         (if (not (nil? free-square))
           (if (> (:age shark) shark-breed)
             ;; reproduce and move to a nearby square
-            (do (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (dec (:energy shark))})
-                (swap! already-moved conj (first free-square)))
+            (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (dec (:energy shark))})
             ;; move only
-            (do (swap! board assoc i nil (first free-square) (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark))))
-                (swap! already-moved conj (first free-square))))
+            (swap! board assoc i nil (first free-square) (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))
           ;; with no free squares around decrease energy only
           (swap! board assoc i (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))))))
 
