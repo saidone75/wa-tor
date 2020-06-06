@@ -35,9 +35,9 @@
     (toggle-modal)
     (let [type (:type (get (:board @board) id))]
       (cond
-        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :energy (:shark-energy @board)}))
+        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :breed 0 :starve 0}))
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
-        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
+        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :breed 0}))))))
 
 (defn slider [param value min max & [step]]
   (js/console.log step)
