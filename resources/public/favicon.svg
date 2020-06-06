@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg
+	version="1.0"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+   width="44"
+   height="44">
+	<defs>
+		<rect id="sea"   x="0" y="0" width="14" height="14" fill="aqua" stroke="white" stroke-width="2"/>
+		<rect id="fish"  x="0" y="0" width="14" height="14" fill="gold" stroke="white" stroke-width="2"/>
+                <rect id="shark" x="0" y="0" width="14" height="14" fill="lightslategray" stroke="white" stroke-width="2"/>
+	</defs>
+	<g transform="translate(1,1)">
+
+		<use xlink:href="#sea" transform="translate(0,0)"/>
+		<use xlink:href="#sea" transform="translate(14,0)"/>
+		<use xlink:href="#fish" transform="translate(28,0)"/>
+
+		<use xlink:href="#fish" transform="translate(0,14)"/>
+		<use xlink:href="#fish" transform="translate(14,14)"/>
+		<use xlink:href="#shark" transform="translate(28,14)"/>
+
+		<use xlink:href="#shark" transform="translate(0,28)"/>
+		<use xlink:href="#sea" transform="translate(14,28)"/>
+		<use xlink:href="#sea" transform="translate(28,28)"/>
+
+	</g>
+</svg>
