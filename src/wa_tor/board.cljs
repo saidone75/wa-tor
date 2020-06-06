@@ -17,12 +17,12 @@
 
 (defonce area (* (:w @board) (:h @board)))
 
-(swap! board assoc :nfishes (quot area 8))
+(swap! board assoc :nfishes (quot area 3))
 (swap! board assoc :nsharks (quot area 10))
 
 (swap! board assoc :fish-breed 6)
-(swap! board assoc :shark-breed 9)
-(swap! board assoc :shark-energy 7)
+(swap! board assoc :shark-breed 16)
+(swap! board assoc :shark-energy 8)
 
 (defn- randomize-board []
   (swap! board assoc :board (logic/populate-board (:w @board) (:h @board) (:nfishes @board) (:nsharks @board) (:shark-energy @board))))
@@ -39,18 +39,13 @@
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
-(defn slider [param value min max]
-  [:input {:type "range" :value value :min min :max max
+(defn slider [param value min max & [step]]
+  (js/console.log step)
+  [:input {:type "range" :value value :min min :max max :step (or step 1)
            :style {:width "80%"}
            :onChange (fn [e]
                        (let [new-value (js/parseInt (.. e -target -value))]
                          (swap! board assoc param new-value)))}])
-
-(defn- check-breed []
-  (if (> (:shark-energy @board) (inc (:shark-breed @board)))
-    (swap! board assoc :shark-energy (inc (:shark-breed @board)))))
-
-(add-watch board :shark-breed #(check-breed))
 
 (defn- modal []
   [:div.modal {:id "usage"}
@@ -77,10 +72,10 @@
      "Fish breed time: " [:b (:fish-breed @board)] " chronons" [:br]
      [slider :fish-breed (:fish-breed @board) 1 20]]
     [:div
-     "Shark breed time: " [:b (:shark-breed @board)] " chronons" [:br]
-     [slider :shark-breed (:shark-breed @board) 1 20]]
+     "Shark breed energy: " [:b (:shark-breed @board)] [:br]
+     [slider :shark-breed (:shark-breed @board) 2 20 2]]
     [:div
-     "Shark energy: " [:b (:shark-energy @board)] [:br]
+     "Shark initial energy: " [:b (:shark-energy @board)] [:br]
      [slider :shark-energy (:shark-energy @board) 1 20]]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]

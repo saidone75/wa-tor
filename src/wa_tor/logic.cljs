@@ -53,7 +53,7 @@
         (do
           (cond
             (contains? fishes i) (swap! board assoc i {:type 'fish :age 0})
-            (contains? sharks i) (swap! board assoc i {:type 'shark :age 0 :energy shark-energy})
+            (contains? sharks i) (swap! board assoc i {:type 'shark :energy shark-energy})
             :else (swap! board assoc i nil))
           (recur (inc i)))))))
 
@@ -86,7 +86,7 @@
 
 ;; move a single shark with index i
 (defn- move-shark [i]
-  (let [{w :w h :h shark-energy :shark-energy shark-breed :shark-breed} @state
+  (let [{w :w h :h shark-breed :shark-breed} @state
         shark (get @board i)
         neighbours (neighbours i w h)
         ;; random nearby fish if any
@@ -97,21 +97,18 @@
       ;; shark die from starvation
       (swap! board assoc i nil)
       (if (not (nil? nearby-fish))
-        (if (> (:age shark) shark-breed)
+        (if (>= (:energy shark) shark-breed)
           ;; reproduce and eat a nearby fish
-          (do (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first nearby-fish) {:type 'shark :age 0 :energy shark-energy})
+          (do (swap! board assoc i {:type 'shark :energy (quot (:energy shark) 2)} (first nearby-fish) {:type 'shark :energy (quot (:energy shark) 2)})
               (swap! already-moved conj (first nearby-fish)))
           ;; eat a nearby fish
-          (do (swap! board assoc i nil (first nearby-fish) (assoc shark :age (inc (:age shark)) :energy (inc (:energy shark))))
+          (do (swap! board assoc i nil (first nearby-fish) (assoc shark :energy (inc (:energy shark))))
               (swap! already-moved conj (first nearby-fish))))
         (if (not (nil? free-square))
-          (if (> (:age shark) shark-breed)
-            ;; reproduce and move to a nearby square
-            (swap! board assoc i {:type 'shark :age 0 :energy shark-energy} (first free-square) {:type 'shark :age 0 :energy (dec (:energy shark))})
-            ;; move only
-            (swap! board assoc i nil (first free-square) (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))
+          ;; move only
+          (swap! board assoc i nil (first free-square) (assoc shark :energy (dec (:energy shark))))
           ;; with no free squares around decrease energy only
-          (swap! board assoc i (assoc shark :age (inc (:age shark)) :energy (dec (:energy shark)))))))))
+          (swap! board assoc i (assoc shark :energy (dec (:energy shark)))))))))
 
 ;; move creature on square i if not already moved on current chronon
 (defn- move-creature [i]
