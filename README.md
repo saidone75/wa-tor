@@ -2,7 +2,7 @@
 
 A population dynamics simulation devised by A.K. Dewdney, loosely mimicking the [Lotka–Volterra equations](https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations)
 
-![wa-tor](https://i.postimg.cc/NGRN9yQS/wa-tor-0-1.png)
+![wa-tor](https://i.postimg.cc/tC5b70qf/wa-tor.png)
 
 ## Usage
 
@@ -11,9 +11,9 @@ A population dynamics simulation devised by A.K. Dewdney, loosely mimicking the 
 * "r" or "swipe right" to reset the board with the current parameters
 * "h" or "swipe up" to toggle the control panel
 
-from the control panel you can set the initial number of fishes and sharks, their breeding time and initial shark energy:
+from the control panel you can set the initial number of fishes and sharks, their breeding threshold and initial shark energy:
 
-![control-panel](https://i.postimg.cc/RFRPNyBh/wa-tor-0-1-control-panel.png)
+![control-panel](https://i.postimg.cc/JzzLkTth/wa-tor-control-panel.png)
 
 ## License
 Copyright (c) 2020 Saidone
