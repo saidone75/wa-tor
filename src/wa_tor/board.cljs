@@ -22,10 +22,10 @@
 
 (swap! board assoc :fish-breed 6)
 (swap! board assoc :shark-breed 16)
-(swap! board assoc :shark-energy 8)
+(swap! board assoc :shark-starve 8)
 
 (defn- randomize-board []
-  (swap! board assoc :board (logic/populate-board (:w @board) (:h @board) (:nfishes @board) (:nsharks @board) (:shark-energy @board))))
+  (swap! board assoc :board (logic/populate-board (:w @board) (:h @board) (:nfishes @board) (:fish-breed @board) (:nsharks @board) (:shark-breed @board) (:shark-starve @board))))
 
 (defn- toggle-modal []
   (-> (.getElementById js/document "usage") (aget "classList") (.toggle "show-modal")))
@@ -72,11 +72,11 @@
      "Fish breed time: " [:b (:fish-breed @board)] " chronons" [:br]
      [slider :fish-breed (:fish-breed @board) 1 20]]
     [:div
-     "Shark breed energy: " [:b (:shark-breed @board)] [:br]
-     [slider :shark-breed (:shark-breed @board) 2 20 2]]
+     "Shark breed time: " [:b (:shark-breed @board)] " chronons" [:br]
+     [slider :shark-breed (:shark-breed @board) 1 20]]
     [:div
-     "Shark initial energy: " [:b (:shark-energy @board)] [:br]
-     [slider :shark-energy (:shark-energy @board) 1 20]]
+     "Shark starve after: " [:b (:shark-starve @board)] " chronons without food" [:br]
+     [slider :shark-energy (:shark-starve @board) 1 20]]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
     "\"r\" or swipe right to randomize board" [:br]
