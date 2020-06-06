@@ -11,7 +11,7 @@ A population dynamics simulation devised by A.K. Dewdney, loosely mimicking the 
 * "r" or "swipe right" to reset the board with the current parameters
 * "h" or "swipe up" to toggle the control panel
 
-from the control panel you can set the initial number of fishes and sharks, their breeding threshold and initial shark energy:
+from the control panel you can set the initial number of fishes and sharks, their breeding thresholds and initial shark energy:
 
 ![control-panel](https://i.postimg.cc/JzzLkTth/wa-tor-control-panel.png)
 
