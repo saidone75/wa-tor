@@ -17,12 +17,12 @@
 
 (defonce area (* (:w @board) (:h @board)))
 
-(swap! board assoc :nfishes (quot area 3))
-(swap! board assoc :nsharks (quot area 10))
+(swap! board assoc :nfishes (quot area 2.25))
+(swap! board assoc :nsharks (quot area 22.5))
 
-(swap! board assoc :fish-breed 6)
-(swap! board assoc :shark-breed 16)
-(swap! board assoc :shark-starve 8)
+(swap! board assoc :fish-breed 3)
+(swap! board assoc :shark-breed 10)
+(swap! board assoc :shark-starve 3)
 
 (defn- randomize-board []
   (swap! board assoc :board (logic/populate-board (:w @board) (:h @board) (:nfishes @board) (:fish-breed @board) (:nsharks @board) (:shark-breed @board) (:shark-starve @board))))
