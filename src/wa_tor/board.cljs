@@ -40,7 +40,6 @@
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :breed 0}))))))
 
 (defn slider [param value min max & [step]]
-  (js/console.log step)
   [:input {:type "range" :value value :min min :max max :step (or step 1)
            :style {:width "80%"}
            :onChange (fn [e]
@@ -75,8 +74,8 @@
      "Shark breed time: " [:b (:shark-breed @board)] " chronons" [:br]
      [slider :shark-breed (:shark-breed @board) 1 20]]
     [:div
-     "Shark starve after: " [:b (:shark-starve @board)] " chronons without food" [:br]
-     [slider :shark-energy (:shark-starve @board) 1 20]]
+     "Shark starve after: " [:b (:shark-starve @board)] " chronons w/o food" [:br]
+     [slider :shark-starve (:shark-starve @board) 1 20]]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
     "\"r\" or swipe right to randomize board" [:br]
@@ -158,7 +157,6 @@
         xdistance (- (:x touchend) (:x touchstart))
         ydistance (- (:y touchend) (:y touchstart))
         time (- (:t touchend) (:t touchstart))]
-    (js/console.log ydistance)
     (if (and (> time (:min time-threshold)) (< time (:max time-threshold)))
       (cond
         (< xdistance (* -1 swipe-threshold)) (clear-board)
