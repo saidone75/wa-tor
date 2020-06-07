@@ -58,14 +58,8 @@
 
 ;; retrieve sharks and fishes indices
 (defn sh-fi [board]
-  (loop [board board i 0 sharks '() fishes '()]
-    (if (empty? board)
-      [sharks fishes]
-      (recur
-       (rest board)
-       (inc i)
-       (if (= 'shark (:type (val (first board)))) (conj sharks i) sharks)
-       (if (= 'fish (:type (val (first board)))) (conj fishes i) fishes)))))
+  [(map key (filter #(= 'shark (:type (val %))) board))
+   (map key (filter #(= 'fish (:type (val %))) board))])
 
 ;; move a single fish with index i
 (defn- move-fish [i]
