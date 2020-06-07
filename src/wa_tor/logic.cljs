@@ -104,7 +104,7 @@
         (if (not (nil? free-square))
           (if (>= (:breed shark) shark-breed)
             ;; reproduce
-            (swap! board assoc i {:type 'shark :breed 0 :starve (:starve shark)} (first nearby-fish) {:type 'shark :breed 0 :starve (:starve shark)})
+            (swap! board assoc i {:type 'shark :breed 0 :starve (:starve shark)} (first free-square) {:type 'shark :breed 0 :starve (:starve shark)})
             ;; move only
             (swap! board assoc i nil (first free-square) (assoc shark :breed (inc (:breed shark)) :starve (inc (:starve shark)))))
           ;; with no free squares around just increase breed and starve
@@ -115,19 +115,12 @@
   (do
     (reset! state (dissoc b :board))
     (reset! board (:board b))
+    ;; move all fishes first 
     (run!
      move-fish
      (shuffle (map key (filter #(= 'fish (:type (val %))) @board))))
+    ;; move all sharks
     (run!
      move-shark
      (shuffle (map key (filter #(= 'shark (:type (val %))) @board))))
-    ;; (loop [creatures-to-move
-    ;;        (concat
-    ;;         (shuffle (map key (filter #(and (not (nil? (val %))) (= 'fish (:type (val %)))) @board)))
-    ;;         (shuffle (map key (filter #(and (not (nil? (val %))) (= 'shark (:type (val %)))) @board))))]
-    ;;   (if (empty? creatures-to-move)
-    ;;     @board
-    ;;     (do
-    ;;       (move-creature (first creatures-to-move))
-    ;;       (recur (rest creatures-to-move)))))
     @board))
