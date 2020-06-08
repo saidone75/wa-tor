@@ -1,7 +1,7 @@
 (ns wa-tor.logic)
 
 (def board (atom (array-map)))
-(def state (atom {}))
+(def state {})
 
 ;; calculate vector index from coords
 (defn- compute-index [x y w]
@@ -66,7 +66,7 @@
 
 ;; move a single fish with index i
 (defn- move-fish! [i]
-  (let [{w :w h :h fbreed :fbreed} @state
+  (let [{w :w h :h fbreed :fbreed} state
         fish (get @board i)
         neighbours (neighbours i w h)
         ;; random nearby free square if any
@@ -82,7 +82,7 @@
 
 ;; move a single shark with index i
 (defn- move-shark! [i]
-  (let [{w :w h :h sbreed :sbreed starve :starve} @state
+  (let [{w :w h :h sbreed :sbreed starve :starve} state
         shark (get @board i)
         neighbours (neighbours i w h)
         ;; random nearby fish if any
@@ -110,7 +110,7 @@
 ;; compute board for next chronon
 (defn next-chronon [current-board]
   (do
-    (reset! state (dissoc current-board :board))
+    (set! state (dissoc current-board :board))
     (reset! board (:board current-board))
     ;; move all fish first 
     (run!
