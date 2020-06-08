@@ -15,7 +15,7 @@ Live version [here](http://wa-tor.saidone.org)
 * "r" or "swipe right" to reset the board with the current parameters
 * "h" or "swipe up" to toggle the control panel
 
-From the control panel you can set the initial number of fishes and sharks, their breeding thresholds and sharks lifespan without food:
+From the control panel you can set the initial number of fish and sharks, their breeding thresholds and sharks lifespan without food:
 
 ![control-panel](https://i.postimg.cc/yxXWGwDt/wa-tor-control-panel.png)
 
