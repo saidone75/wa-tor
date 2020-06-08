@@ -54,7 +54,7 @@
                                    "modal-content-small"))}
     [:span {:class "close-button"
             :onClick #(toggle-modal)} "[X]"]
-    [:b "USAGE"] [:br]
+    [:b [:pre "   USAGE"]]
     "Pause the game to edit board, either by" [:br]
     "pressing spacebar" [:br]
     "or" [:br]
@@ -81,7 +81,7 @@
     "\"r\" or swipe right to randomize board" [:br]
     "\"h\" or swipe up to toggle this panel" [:br]
     [:hr]
-    "More on " [:a {:href "https://en.wikipedia.org/wiki/Wa-Tor"} "Wa-Tor"] [:br]
+    "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
     "Copyright (c) 2020 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
