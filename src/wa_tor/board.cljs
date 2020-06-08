@@ -17,15 +17,15 @@
 
 (defonce area (* (:w @board) (:h @board)))
 
-(swap! board assoc :nfishes (quot area 2.25))
+;; initial parameters as in the original article
+(swap! board assoc :nfish (quot area 2.25))
 (swap! board assoc :nsharks (quot area 22.5))
+(swap! board assoc :fbreed 3)
+(swap! board assoc :sbreed 10)
+(swap! board assoc :starve 3)
 
-(swap! board assoc :fish-breed 3)
-(swap! board assoc :shark-breed 10)
-(swap! board assoc :shark-starve 3)
-
-(defn- randomize-board []
-  (swap! board assoc :board (logic/populate-board (:w @board) (:h @board) (:nfishes @board) (:fish-breed @board) (:nsharks @board) (:shark-breed @board) (:shark-starve @board))))
+(defn- randomize-board! []
+  (swap! board assoc :board (logic/populate-board! (dissoc @board :board))))
 
 (defn- toggle-modal []
   (-> (.getElementById js/document "usage") (aget "classList") (.toggle "show-modal")))
@@ -35,12 +35,12 @@
     (toggle-modal)
     (let [type (:type (get (:board @board) id))]
       (cond
-        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :breed 0 :starve 0}))
+        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :starve 0}))
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
-        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :breed 0}))))))
+        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
-(defn slider [param value min max & [step]]
-  [:input {:type "range" :value value :min min :max max :step (or step 1)
+(defn slider [param value min max]
+  [:input {:type "range" :value value :min min :max max
            :style {:width "80%"}
            :onChange (fn [e]
                        (let [new-value (js/parseInt (.. e -target -value))]
@@ -62,20 +62,20 @@
     "click on a square to cycle between" [:br]
     "sea >>> fish >>> shark" [:br] [:br]
     [:div
-     "Number of fishes: " [:b (:nfishes @board)] [:br]
-     [slider :nfishes (:nfishes @board) 0 (- area (:nsharks @board))]]
+     "Number of fish: " [:b (:nfish @board)] [:br]
+     [slider :nfish (:nfish @board) 0 (- area (:nsharks @board))]]
     [:div
      "Number of sharks: " [:b (:nsharks @board)] [:br]
-     [slider :nsharks (:nsharks @board) 0 (- area (:nfishes @board))]]
+     [slider :nsharks (:nsharks @board) 0 (- area (:nfish @board))]]
     [:div
-     "Fish breed time: " [:b (:fish-breed @board)] " chronons" [:br]
-     [slider :fish-breed (:fish-breed @board) 1 20]]
+     "Fish breed time: " [:b (:fbreed @board)] " chronons" [:br]
+     [slider :fbreed (:fbreed @board) 1 20]]
     [:div
-     "Shark breed time: " [:b (:shark-breed @board)] " chronons" [:br]
-     [slider :shark-breed (:shark-breed @board) 1 20]]
+     "Shark breed time: " [:b (:sbreed @board)] " chronons" [:br]
+     [slider :sbreed (:sbreed @board) 1 20]]
     [:div
-     "Shark starve after: " [:b (:shark-starve @board)] " chronons w/o food" [:br]
-     [slider :shark-starve (:shark-starve @board) 1 20]]
+     "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
+     [slider :starve (:starve @board) 1 20]]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
     "\"r\" or swipe right to randomize board" [:br]
@@ -115,7 +115,7 @@
                                                     (= 'shark (:type v)) "lightslategray"
                                                     :else "aqua")])))))]])))
 
-(defn- clear-board []
+(defn- clear-board! []
   (swap! state assoc :start false)
   (swap! board assoc :board
          (apply merge (for [x (range area)]
@@ -135,8 +135,8 @@
     (cond
       (= 72 event.keyCode) (toggle-modal)
       (= 32 event.keyCode) (swap! state assoc :start (not (:start @state)))
-      (= 67 event.keyCode) (clear-board)
-      (= 82 event.keyCode) (randomize-board))))
+      (= 67 event.keyCode) (clear-board!)
+      (= 82 event.keyCode) (randomize-board!))))
 
 (defonce touchstart {})
 (defonce swipe-threshold (/ window-width 3))
@@ -159,8 +159,8 @@
         time (- (:t touchend) (:t touchstart))]
     (if (and (> time (:min time-threshold)) (< time (:max time-threshold)))
       (cond
-        (< xdistance (* -1 swipe-threshold)) (clear-board)
-        (> xdistance swipe-threshold) (randomize-board)
+        (< xdistance (* -1 swipe-threshold)) (clear-board!)
+        (> xdistance swipe-threshold) (randomize-board!)
         (< ydistance (* -1 swipe-threshold)) (toggle-modal)))))
 
 (defn create-board! []
@@ -170,7 +170,7 @@
       (js/document.addEventListener "keydown" keydown-handler)
       (js/document.addEventListener "touchstart" touchstart-handler)
       (js/document.addEventListener "touchend" touchend-handler)      
-      (randomize-board)
+      (randomize-board!)
       (swap! state assoc :start true)
       (swap! state assoc :interval (js/setInterval update-board! 200))))
   state)
