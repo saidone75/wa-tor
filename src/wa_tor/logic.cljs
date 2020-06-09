@@ -1,6 +1,10 @@
+;; Copyright (c) 2020 Saidone
+
 (ns wa-tor.logic)
 
+;; local board work copy
 (def board (atom (array-map)))
+;; plain map, set on next-chronon function
 (def state {})
 
 ;; calculate vector index from coords
@@ -67,7 +71,9 @@
 ;; move a single fish with index i
 (defn- move-fish! [i]
   (let [{w :w h :h fbreed :fbreed} state
+        ;; current fish
         fish (get @board i)
+        ;; neighbours of i
         neighbours (neighbours i w h)
         ;; random nearby free square if any
         free-square (ffirst (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
@@ -83,7 +89,9 @@
 ;; move a single shark with index i
 (defn- move-shark! [i]
   (let [{w :w h :h sbreed :sbreed starve :starve} state
+        ;; current shark
         shark (get @board i)
+        ;; neighbours of i
         neighbours (neighbours i w h)
         ;; random nearby fish if any
         nearby-fish (ffirst (shuffle (filter #(= 'fish (:type (val %))) (zipmap neighbours (map #(get @board %) neighbours)))))
@@ -110,16 +118,19 @@
 ;; compute board for next chronon
 (defn next-chronon [current-board]
   (do
+    ;; state map for not carrying around too many parameters
     (set! state (dissoc current-board :board))
+    ;; set local board work copy
     (reset! board (:board current-board))
     ;; move all fish first 
     (run!
      move-fish!
-     ;; all fish, randomly picked
+     ;; all fish, shuffled
      (shuffle (map key (filter #(= 'fish (:type (val %))) @board))))
     ;; move all sharks
     (run!
      move-shark!
-     ;; all sharks, randomly picked
+     ;; all sharks, shuffled
      (shuffle (map key (filter #(= 'shark (:type (val %))) @board))))
+    ;; return updated board
     @board))

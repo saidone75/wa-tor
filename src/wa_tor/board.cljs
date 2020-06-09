@@ -1,3 +1,5 @@
+;; Copyright (c) 2020 Saidone
+
 (ns wa-tor.board
   (:require
    [reagent.core :as reagent :refer [atom]]
@@ -12,6 +14,9 @@
 
 (defonce state (reagent/atom {}))
 
+;; original ocean size was:
+;; 80x23 on Magi's VAX
+;; 32x14 on A.K. Dewdney's IBM PC
 (swap! board assoc :w (quot (* .92 window-width) blocksize))
 (swap! board assoc :h (quot (* .94 window-height) blocksize))
 
@@ -102,6 +107,7 @@
            [:div.board {:id "board"}
             (modal)
             [:svg.board {:width (* blocksize w) :height (* blocksize h)}
+             ;; not as clean as map, but faster
              (loop [board board blocks '()]
                (if (empty? board)
                  blocks
@@ -118,6 +124,7 @@
 (defn- clear-board! []
   (swap! state assoc :start false)
   (swap! board assoc :board
+         ;; set all elements to nil
          (apply merge (for [x (range area)]
                         (array-map x nil)))))
 
@@ -125,8 +132,10 @@
   (if (:start @state)
     (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
+      ;; pause the game if the board is unchanged from last chronon
       (if (and (= (first prev-board) (first (logic/sh-fi (:board @board))))
                (= (last prev-board) (last (logic/sh-fi (:board @board))))
+               ;; but don't pause if board is filled with sharks
                (not (= (count (first prev-board)) area)))
         (swap! state assoc :start false)))))
 
@@ -166,11 +175,14 @@
 (defn create-board! []
   (if (nil? (:board @board))
     (do
+      ;; a watch will take care of redraw on board change
       (add-watch board :board #(draw-board))
       (js/document.addEventListener "keydown" keydown-handler)
       (js/document.addEventListener "touchstart" touchstart-handler)
-      (js/document.addEventListener "touchend" touchend-handler)      
+      (js/document.addEventListener "touchend" touchend-handler)
+      ;; fill initial board
       (randomize-board!)
       (swap! state assoc :start true)
+      ;; call update-board! every 200 ms
       (swap! state assoc :interval (js/setInterval update-board! 200))))
   state)
