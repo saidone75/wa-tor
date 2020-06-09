@@ -70,13 +70,13 @@
         fish (get @board i)
         neighbours (neighbours i w h)
         ;; random nearby free square if any
-        free-square (first (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
+        free-square (ffirst (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
     (if (not (nil? free-square))
       (if (>= (:age fish) fbreed)
         ;; reproduce
-        (swap! board assoc i {:type 'fish :age 0} (first free-square) {:type 'fish :age 0})
+        (swap! board assoc i {:type 'fish :age 0} free-square {:type 'fish :age 0})
         ;; move only
-        (swap! board assoc i nil (first free-square) (update fish :age inc)))
+        (swap! board assoc i nil free-square (update fish :age inc)))
       ;; with no free squares around increase age only
       (swap! board assoc i (update fish :age inc)))))
 
@@ -86,24 +86,24 @@
         shark (get @board i)
         neighbours (neighbours i w h)
         ;; random nearby fish if any
-        nearby-fish (first (shuffle (filter #(= 'fish (:type (val %))) (zipmap neighbours (map #(get @board %) neighbours)))))
+        nearby-fish (ffirst (shuffle (filter #(= 'fish (:type (val %))) (zipmap neighbours (map #(get @board %) neighbours)))))
         ;; random nearby free square if any
-        free-square (first (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
+        free-square (ffirst (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
     (if (>= (:starve shark) starve)
       ;; shark die from starvation
       (swap! board assoc i nil)
       (if (not (nil? nearby-fish))
         (if (>= (:age shark) sbreed)
           ;; reproduce and eat a nearby fish
-          (swap! board assoc i {:type 'shark :age 0 :starve 0} (first nearby-fish) {:type 'shark :age 0 :starve 0})
+          (swap! board assoc i {:type 'shark :age 0 :starve 0} nearby-fish {:type 'shark :age 0 :starve 0})
           ;; eat a nearby fish
-          (swap! board assoc i nil (first nearby-fish) {:type 'shark :age (inc (:age shark)) :starve 0}))
+          (swap! board assoc i nil nearby-fish {:type 'shark :age (inc (:age shark)) :starve 0}))
         (if (not (nil? free-square))
           (if (>= (:age shark) sbreed)
             ;; reproduce
-            (swap! board assoc i {:type 'shark :age 0 :starve (:starve shark)} (first free-square) {:type 'shark :age 0 :starve (:starve shark)})
+            (swap! board assoc i {:type 'shark :age 0 :starve (:starve shark)} free-square {:type 'shark :age 0 :starve (:starve shark)})
             ;; move only
-            (swap! board assoc i nil (first free-square) (assoc shark :age (inc (:age shark)) :starve (inc (:starve shark)))))
+            (swap! board assoc i nil free-square (assoc shark :age (inc (:age shark)) :starve (inc (:starve shark)))))
           ;; with no free squares around just increase age and starve
           (swap! board assoc i (assoc shark :age (inc (:age shark)) :starve (inc (:starve shark)))))))))
 
