@@ -125,8 +125,7 @@
   (swap! state assoc :start false)
   (swap! board assoc :board
          ;; set all elements to nil
-         (apply merge (for [x (range area)]
-                        (array-map x nil)))))
+         (apply merge (map array-map (range area)))))
 
 (defn- update-board! []
   (if (:start @state)
