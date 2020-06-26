@@ -77,7 +77,7 @@
         neighbours (neighbours i w h)
         ;; random nearby free square if any
         free-square (ffirst (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
-    (if (not (nil? free-square))
+    (if-not (nil? free-square)
       (if (>= (:age fish) fbreed)
         ;; reproduce
         (swap! board assoc i {:type 'fish :age 0} free-square {:type 'fish :age 0})
@@ -100,13 +100,13 @@
     (if (>= (:starve shark) starve)
       ;; shark die from starvation
       (swap! board assoc i nil)
-      (if (not (nil? nearby-fish))
+      (if-not (nil? nearby-fish)
         (if (>= (:age shark) sbreed)
           ;; reproduce and eat a nearby fish
           (swap! board assoc i {:type 'shark :age 0 :starve 0} nearby-fish {:type 'shark :age 0 :starve 0})
           ;; eat a nearby fish
           (swap! board assoc i nil nearby-fish {:type 'shark :age (inc (:age shark)) :starve 0}))
-        (if (not (nil? free-square))
+        (if-not (nil? free-square)
           (if (>= (:age shark) sbreed)
             ;; reproduce
             (swap! board assoc i {:type 'shark :age 0 :starve (:starve shark)} free-square {:type 'shark :age 0 :starve (:starve shark)})
