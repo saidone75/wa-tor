@@ -17,10 +17,7 @@
 ;; add randomness to threshold
 (defn- randomize [threshold]
   (if (:random state)
-    (let [random-threshold (+ (normal-random-int) threshold)]
-      (if (< random-threshold 1)
-        threshold
-        random-threshold))
+    (max 1 (+ (normal-random-int) threshold))
     threshold))
 
 ;; calculate vector index from coords
