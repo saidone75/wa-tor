@@ -7,6 +7,15 @@
 ;; plain map, set on next-chronon function
 (def state {})
 
+(defn- random-normal []
+  (*
+   (Math/cos (* 2 Math/PI (rand)))
+   (Math/sqrt (* -2 (Math/log (rand))))))
+
+;;(random-normal)
+
+;;(take 1000 (repeatedly random-normal))
+
 ;; calculate vector index from coords
 (defn- compute-index [x y w]
   (+ x (* y w)))
