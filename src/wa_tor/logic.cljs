@@ -7,14 +7,21 @@
 ;; plain map, set on next-chronon function
 (def state {})
 
-(defn- random-normal []
-  (*
-   (Math/cos (* 2 Math/PI (rand)))
-   (Math/sqrt (* -2 (Math/log (rand))))))
+;;normally distributed random int
+(defn- normal-random-int []
+  (Math/round
+   (*
+    (Math/cos (* 2 Math/PI (rand)))
+    (Math/sqrt (* -2 (Math/log (rand)))))))
 
-;;(random-normal)
-
-;;(take 1000 (repeatedly random-normal))
+;; add randomness to threshold
+(defn- randomize [threshold]
+  (if (:random state)
+    (let [random-threshold (+ (normal-random-int) threshold)]
+      (if (< random-threshold 1)
+        threshold
+        random-threshold))
+    threshold))
 
 ;; calculate vector index from coords
 (defn- compute-index [x y w]
@@ -87,7 +94,7 @@
         ;; random nearby free square if any
         free-square (ffirst (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
     (if-not (nil? free-square)
-      (if (>= (:age fish) fbreed)
+      (if (>= (:age fish) (randomize fbreed))
         ;; reproduce
         (swap! board assoc i {:type 'fish :age 0} free-square {:type 'fish :age 0})
         ;; move only
@@ -106,17 +113,17 @@
         nearby-fish (ffirst (shuffle (filter #(= 'fish (:type (val %))) (zipmap neighbours (map #(get @board %) neighbours)))))
         ;; random nearby free square if any
         free-square (ffirst (shuffle (filter #(nil? (val %)) (zipmap neighbours (map #(get @board %) neighbours)))))]
-    (if (>= (:starve shark) starve)
+    (if (>= (:starve shark) (randomize starve))
       ;; shark die from starvation
       (swap! board assoc i nil)
       (if-not (nil? nearby-fish)
-        (if (>= (:age shark) sbreed)
+        (if (>= (:age shark) (randomize sbreed))
           ;; reproduce and eat a nearby fish
           (swap! board assoc i {:type 'shark :age 0 :starve 0} nearby-fish {:type 'shark :age 0 :starve 0})
           ;; eat a nearby fish
           (swap! board assoc i nil nearby-fish {:type 'shark :age (inc (:age shark)) :starve 0}))
         (if-not (nil? free-square)
-          (if (>= (:age shark) sbreed)
+          (if (>= (:age shark) (randomize sbreed))
             ;; reproduce
             (swap! board assoc i {:type 'shark :age 0 :starve (:starve shark)} free-square {:type 'shark :age 0 :starve (:starve shark)})
             ;; move only

@@ -28,6 +28,7 @@
 (swap! board assoc :fbreed 3)
 (swap! board assoc :sbreed 10)
 (swap! board assoc :starve 3)
+(swap! board assoc :random true)
 
 (defn- randomize-board! []
   (swap! board assoc :board (logic/populate-board! (dissoc @board :board))))
@@ -50,6 +51,11 @@
            :onChange (fn [e]
                        (let [new-value (js/parseInt (.. e -target -value))]
                          (swap! board assoc param new-value)))}])
+
+(defn checkbox [param]
+  [:input {:type :checkbox :checked (param @board)
+           :onChange (fn [e]
+                       (swap! board assoc param (not (param @board))))}])
 
 (defn- modal []
   [:div.modal {:id "usage"}
@@ -81,6 +87,10 @@
     [:div
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
      [slider :starve (:starve @board) 1 20]]
+    [:div
+     "Additional randomness: " [:b (str(:random @board))] [:br]
+     [checkbox :random]]
+    [:br]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
     "\"r\" or swipe right to randomize board" [:br]
