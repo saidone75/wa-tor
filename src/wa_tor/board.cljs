@@ -89,9 +89,11 @@
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
      [slider :starve (:starve @board) 1 20]]
     "Additional randomness: " [:b (str(:random @board))] [:br]
+    "off"
     [:label {:class "switch"}
      [checkbox :random]
      [:span {:class "slider"}]]
+    "on"
     [:br]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
