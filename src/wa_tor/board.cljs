@@ -28,6 +28,7 @@
 (swap! board assoc :fbreed 3)
 (swap! board assoc :sbreed 10)
 (swap! board assoc :starve 3)
+;; additional randomness on by default
 (swap! board assoc :random true)
 
 (defn- randomize-board! []
@@ -87,9 +88,10 @@
     [:div
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
      [slider :starve (:starve @board) 1 20]]
-    [:div
-     "Additional randomness: " [:b (str(:random @board))] [:br]
-     [checkbox :random]]
+    "Additional randomness: " [:b (str(:random @board))] [:br]
+    [:label {:class "switch"}
+     [checkbox :random]
+     [:span {:class "slider"}]]
     [:br]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
