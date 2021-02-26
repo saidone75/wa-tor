@@ -1,3 +1,5 @@
+;; Copyright (c) 2020-2021 Saidone
+
 (ns ^:figwheel-hooks wa-tor.core
   (:require
    [goog.dom :as gdom]
@@ -25,3 +27,6 @@
 
 (defn ^:after-load on-reload []
   (mount-app-element))
+
+(defn version [x] "1.1")
+(aset js/window "version" wa-tor.core/version)

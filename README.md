@@ -6,7 +6,7 @@ Based on [the original article](https://github.com/saidone75/wa-tor/blob/master/
 
 Live version [here](http://wa-tor.saidone.org)
 
-![wa-tor](https://i.postimg.cc/hjHz0Cmy/wa-tor.png)
+[![wa-tor](https://i.postimg.cc/V62MYL6y/wa-tor.png)](http://wa-tor.saidone.org)
 
 ## Usage
 
@@ -17,9 +17,9 @@ Live version [here](http://wa-tor.saidone.org)
 
 From the control panel you can set the initial number of fish and sharks, their breeding thresholds and sharks lifespan without food:
 
-![control-panel](https://i.postimg.cc/q7DCNBvd/wa-tor-control-panel.png)
+[![control-panel](https://i.postimg.cc/9MDZ5qct/wa-tor-control-panel.png)](http://wa-tor.saidone.org)
 
 ## License
-Copyright (c) 2020 Saidone
+Copyright (c) 2020-2021 Saidone
 
 Distributed under the MIT License

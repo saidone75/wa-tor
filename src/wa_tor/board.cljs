@@ -1,4 +1,4 @@
-;; Copyright (c) 2020 Saidone
+;; Copyright (c) 2020-2021 Saidone
 
 (ns wa-tor.board
   (:require
@@ -28,6 +28,7 @@
 (swap! board assoc :fbreed 3)
 (swap! board assoc :sbreed 10)
 (swap! board assoc :starve 3)
+;; additional randomness on by default
 (swap! board assoc :random true)
 
 (defn- randomize-board! []
@@ -87,9 +88,12 @@
     [:div
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
      [slider :starve (:starve @board) 1 20]]
-    [:div
-     "Additional randomness: " [:b (str(:random @board))] [:br]
-     [checkbox :random]]
+    "Additional randomness: " [:b (str(:random @board))] [:br]
+    "off"
+    [:label {:class "switch"}
+     [checkbox :random]
+     [:span {:class "slider"}]]
+    "on"
     [:br]
     "Other commands:" [:br]
     "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
@@ -98,7 +102,7 @@
     [:hr]
     "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
-    "Copyright (c) 2020 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
+    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
 (defn- block [id x y color]
