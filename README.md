@@ -20,6 +20,6 @@ From the control panel you can set the initial number of fish and sharks, their 
 ![control-panel](https://i.postimg.cc/q7DCNBvd/wa-tor-control-panel.png)
 
 ## License
-Copyright (c) 2020 Saidone
+Copyright (c) 2020-2021 Saidone
 
 Distributed under the MIT License

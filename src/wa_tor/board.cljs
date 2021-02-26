@@ -1,4 +1,4 @@
-;; Copyright (c) 2020 Saidone
+;; Copyright (c) 2020-2021 Saidone
 
 (ns wa-tor.board
   (:require
@@ -98,7 +98,7 @@
     [:hr]
     "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
-    "Copyright (c) 2020 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
+    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
 (defn- block [id x y color]
