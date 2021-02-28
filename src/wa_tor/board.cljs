@@ -34,12 +34,12 @@
 (defn- randomize-board! []
   (swap! board assoc :board (logic/populate-board! (dissoc @board :board))))
 
-(defn- toggle-modal []
-  (-> (.getElementById js/document "usage") (aget "classList") (.toggle "show-modal")))
+(defn- toggle-modal [id]
+  (-> (.getElementById js/document id) (aget "classList") (.toggle "show-modal")))
 
 (defn- toggle [id]
   (if (:start @state)
-    (toggle-modal)
+    (toggle-modal "usage")
     (let [type (:type (get (:board @board) id))]
       (cond
         (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :starve 0}))
@@ -65,7 +65,7 @@
                                    "modal-content-large"
                                    "modal-content-small"))}
     [:span {:class "close-button"
-            :onClick #(toggle-modal)} "[X]"]
+            :onClick #(toggle-modal "usage")} "[X]"]
     [:b [:pre "   USAGE"]]
     "Pause the game to edit board, either by" [:br]
     "pressing spacebar" [:br]
@@ -105,6 +105,19 @@
     "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
+(defn- stats []
+  [:div.modal {:id "stats"}
+   [:div.modal-content {:class (let [ratio (/ window-width window-height)]
+                                 (if (> ratio 1)
+                                   "modal-content-large"
+                                   "modal-content-small"))}
+    [:span {:class "close-button"
+            :onClick #(toggle-modal "stats")} "[X]"]
+    "fish: " (count (filter #(= 'fish (:type (val %))) (:board @board)))
+    " "
+    "sharks: " (count (filter #(= 'shark (:type (val %))) (:board @board)))
+    ]])
+
 (defn- block [id x y color]
   [:rect {:id id
           :x x
@@ -120,6 +133,7 @@
     (swap! state assoc :content
            [:div.board {:id "board"}
             (modal)
+            (stats)
             [:svg.board {:width (* blocksize w) :height (* blocksize h)}
              ;; not as clean as map, but faster
              (loop [board board blocks '()]
@@ -155,7 +169,8 @@
 (defn- keydown-handler [event]
   (if (.getElementById js/document "board")
     (cond
-      (= 72 event.keyCode) (toggle-modal)
+      (= 72 event.keyCode) (toggle-modal "usage")
+      (= 83 event.keyCode) (toggle-modal "stats")
       (= 32 event.keyCode) (swap! state assoc :start (not (:start @state)))
       (= 67 event.keyCode) (clear-board!)
       (= 82 event.keyCode) (randomize-board!))))
@@ -183,7 +198,7 @@
       (cond
         (< xdistance (* -1 swipe-threshold)) (clear-board!)
         (> xdistance swipe-threshold) (randomize-board!)
-        (< ydistance (* -1 swipe-threshold)) (toggle-modal)))))
+        (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
 (defn create-board! []
   (if (nil? (:board @board))
