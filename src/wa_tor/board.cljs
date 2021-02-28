@@ -31,7 +31,17 @@
 ;; additional randomness on by default
 (swap! board assoc :random true)
 
+;; history for stats
+(def history (vec (take 200 (repeat []))))
+;; chronon counter
+(def chronon 0)
+
+(defn clear-stats! []
+  (set! history (vec (take 200 (repeat []))))
+  (set! chronon 0))
+
 (defn- randomize-board! []
+  (clear-stats!)
   (swap! board assoc :board (logic/populate-board! (dissoc @board :board))))
 
 (defn- toggle-modal [id]
@@ -105,6 +115,30 @@
     "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
+(defn- stats-graph! [fish sharks]
+  (set! history (vec (drop 1 (conj history [fish sharks]))))
+  [:svg.stats {:id "svg.stats" :width "100%" :height "100%"}
+   (if (= "complete" (aget js/document "readyState"))
+     (let [height (aget (.getElementById js/document "svg.stats") "clientHeight")
+           width (aget (.getElementById js/document "svg.stats") "clientWidth")
+           stepx (/ width (count history))
+           sw 3]
+       (conj
+        (loop [history history x 0 blocks '()]
+          (if (< (count history) 2) blocks
+              (recur (drop 1 history) (+ x stepx)
+                     (conj blocks
+                           ^{:key (random-uuid)} [:line {:x1 x
+                                                         :x2 (+ x stepx)
+                                                         :y1 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (first history)) area)))
+                                                         :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (second history)) area)))
+                                                         :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
+                           ^{:key (random-uuid)} [:line {:x1 x
+                                                         :x2 (+ x stepx)
+                                                         :y1 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (second (first history)) area)))
+                                                         :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (second (second history)) area)))
+                                                         :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}])))))))])
+
 (defn- stats []
   [:div.modal {:id "stats"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
@@ -113,10 +147,12 @@
                                    "modal-content-small"))}
     [:span {:class "close-button"
             :onClick #(toggle-modal "stats")} "[X]"]
-    "fish: " (count (filter #(= 'fish (:type (val %))) (:board @board)))
-    " "
-    "sharks: " (count (filter #(= 'shark (:type (val %))) (:board @board)))
-    ]])
+    [:b [:pre "   STATS"]]
+    (let [fish (count (filter #(= 'fish (:type (val %))) (:board @board)))
+          sharks (count (filter #(= 'shark (:type (val %))) (:board @board)))]
+      [:div
+       (stats-graph! fish sharks)
+       [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]])]])
 
 (defn- block [id x y color]
   [:rect {:id id
@@ -150,7 +186,8 @@
                                                     :else "aqua")])))))]])))
 
 (defn- clear-board! []
-  (swap! state assoc :start false)
+  (clear-stats!)
+  (swap! state assoc :start false) 
   (swap! board assoc :board
          ;; set all elements to nil
          (apply merge (map array-map (range area)))))
@@ -159,6 +196,7 @@
   (if (:start @state)
     (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
+      (set! chronon (inc chronon))
       ;; pause the game if the board is unchanged from last chronon
       (if (and (= (first prev-board) (first (logic/sh-fi (:board @board))))
                (= (last prev-board) (last (logic/sh-fi (:board @board))))
