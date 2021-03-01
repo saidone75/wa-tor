@@ -50,6 +50,9 @@
 (defn- toggle-modal [id]
   (-> (.getElementById js/document id) (aget "classList") (.toggle "show-modal")))
 
+(defn- show-modal [id]
+  (-> (.getElementById js/document id) (aget "classList") (.add "show-modal")))
+
 (defn- toggle [id]
   (if (:start @state)
     (toggle-modal "usage")
@@ -233,7 +236,7 @@
               (set! touchstart {:x (-> event.changedTouches (aget 0) (aget "pageX"))
                                 :y (-> event.changedTouches (aget 0) (aget "pageY"))
                                 :t (.getTime (js/Date.))})
-              (set! timeout-timer (js/setTimeout #(toggle-modal "stats") 2000))))))
+              (set! timeout-timer (js/setTimeout #(show-modal "stats") 2000))))))
 
 (defn- touchend-handler [event]
   (let [touchend {:x (-> event.changedTouches (aget 0) (aget "pageX"))
