@@ -115,8 +115,7 @@
     "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
 
-(defn- stats-graph! [fish sharks]
-  (set! history (vec (drop 1 (conj history [fish sharks]))))
+(defn- stats-graph []
   [:svg.stats {:id "svg.stats" :width "100%" :height "100%"}
    (if (and (= "complete" (aget js/document "readyState"))
             (not (= "modal" (aget (.getElementById js/document "stats") "classList"))))
@@ -140,7 +139,7 @@
                                                          :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (second (second history)) area)))
                                                          :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}])))))))])
 
-(defn- stats []
+(defn- stats! []
   [:div.modal {:id "stats"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
                                  (if (> ratio 1)
@@ -151,8 +150,9 @@
     [:b [:pre "   STATS"]]
     (let [fish (count (filter #(= 'fish (:type (val %))) (:board @board)))
           sharks (count (filter #(= 'shark (:type (val %))) (:board @board)))]
+      (set! history (vec (drop 1 (conj history [fish sharks]))))
       [:div
-       (stats-graph! fish sharks)
+       (stats-graph)
        [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]])]])
 
 (defn- block [id x y color]
@@ -170,7 +170,7 @@
     (swap! state assoc :content
            [:div.board {:id "board"}
             (modal)
-            (stats)
+            (stats!)
             [:svg.board {:width (* blocksize w) :height (* blocksize h)}
              ;; not as clean as map, but faster
              (loop [board board blocks '()]
