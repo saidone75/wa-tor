@@ -160,7 +160,7 @@
        [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]
        "Magnify sharks: " [:b (str (:magnify-sharks @board) "x")] [:br]
        "1x "
-       [slider :magnify-sharks (:magnify-sharks @board) 1 4 16]
+       [slider :magnify-sharks (:magnify-sharks @board) 1 4 20]
        " 4x"
        ])]])
 
