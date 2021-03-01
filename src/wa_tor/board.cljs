@@ -28,16 +28,17 @@
 (swap! board assoc :fbreed 3)
 (swap! board assoc :sbreed 10)
 (swap! board assoc :starve 3)
-;; additional randomness on by default
+;; extra randomness on by default
 (swap! board assoc :random true)
 
 ;; history for stats
-(def history (vec (take 200 (repeat []))))
+(defonce history-size 200)
+(def history (vec (take history-size (repeat []))))
 ;; chronon counter
 (def chronon 0)
 
 (defn clear-stats! []
-  (set! history (vec (take 200 (repeat []))))
+  (set! history (vec (take history-size (repeat []))))
   (set! chronon 0))
 
 (defn- randomize-board! []
@@ -217,14 +218,17 @@
 (defonce touchstart {})
 (defonce swipe-threshold (/ window-width 3))
 (defonce time-threshold {:min 180 :max 1000})
+(def timeout-timer)
 
 (defn- touchstart-handler [event]
   (if (.getElementById js/document "board")
     (cond
       (= 2 event.touches.length) (swap! state assoc :start (not (:start @state)))
-      :else (set! touchstart {:x (-> event.changedTouches (aget 0) (aget "pageX"))
-                              :y (-> event.changedTouches (aget 0) (aget "pageY"))
-                              :t (.getTime (js/Date.))}))))
+      :else (do
+              (set! touchstart {:x (-> event.changedTouches (aget 0) (aget "pageX"))
+                                :y (-> event.changedTouches (aget 0) (aget "pageY"))
+                                :t (.getTime (js/Date.))})
+              (set! timeout-timer (js/setTimeout #(toggle-modal "stats") 3000))))))
 
 (defn- touchend-handler [event]
   (let [touchend {:x (-> event.changedTouches (aget 0) (aget "pageX"))
@@ -233,6 +237,7 @@
         xdistance (- (:x touchend) (:x touchstart))
         ydistance (- (:y touchend) (:y touchstart))
         time (- (:t touchend) (:t touchstart))]
+    (js/clearTimeout timeout-timer)
     (if (and (> time (:min time-threshold)) (< time (:max time-threshold)))
       (cond
         (< xdistance (* -1 swipe-threshold)) (clear-board!)
