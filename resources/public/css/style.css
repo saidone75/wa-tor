@@ -120,16 +120,6 @@ input[type=range]::-moz-range-thumb {
     cursor: pointer;
 }
 
-input[type=range]::-ms-track {
-    width: 100%;
-    height: 4px;
-    cursor: pointer;
-    animate: 0.2s;
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
-}
-
 .switch {
     position: relative;
     display: inline-block;
