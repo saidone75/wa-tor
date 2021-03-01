@@ -36,6 +36,8 @@
 (def history (vec (take history-size (repeat []))))
 ;; chronon counter
 (def chronon 0)
+;; magnify sharks stats
+(swap! board assoc :magnify-sharks false)
 
 (defn clear-stats! []
   (set! history (vec (take history-size (repeat []))))
@@ -121,7 +123,8 @@
      (let [height (aget (.getElementById js/document "svg.stats") "clientHeight")
            width (aget (.getElementById js/document "svg.stats") "clientWidth")
            stepx (/ width (count history))
-           sw 3]
+           sw 3
+           magnify-sharks (if (:magnify-sharks @board) 4 1)]
        (conj
         (loop [history history x 0 blocks '()]
           (if (< (count history) 2) blocks
@@ -134,8 +137,8 @@
                                                          :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
                            ^{:key (random-uuid)} [:line {:x1 x
                                                          :x2 (+ x stepx)
-                                                         :y1 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (second (first history)) area)))
-                                                         :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (second (second history)) area)))
+                                                         :y1 (+ (- height sw) (* magnify-sharks -1 (- height (* 2 sw)) (/ (second (first history)) area)))
+                                                         :y2 (+ (- height sw) (* magnify-sharks -1 (- height (* 2 sw)) (/ (second (second history)) area)))
                                                          :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}])))))))])
 
 (defn- stats! []
@@ -152,7 +155,14 @@
       (set! history (vec (drop 1 (conj history [fish sharks]))))
       [:div
        (stats-graph)
-       [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]])]])
+       [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]
+       "Magnify sharks: " [:b (str(:magnify-sharks @board))] [:br]
+       "1x"
+       [:label {:class "switch"}
+        [checkbox :magnify-sharks]
+        [:span {:class "slider"}]]
+       "4x"
+       ])]])
 
 (defn- block [id x y color]
   [:rect {:id id
