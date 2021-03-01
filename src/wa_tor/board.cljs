@@ -78,17 +78,15 @@
     [:span {:class "close-button"
             :onClick #(toggle-modal "usage")} "[X]"]
     [:b [:pre "   USAGE"]]
-    "Pause the game to edit board, either by" [:br]
-    "pressing spacebar" [:br]
-    "or" [:br]
-    "tapping with two fingers" [:br] [:br]
+    "Pause/resume the game by pressing spacebar" [:br]
+    "or tapping with two fingers" [:br] [:br]
     "click on a square to cycle between" [:br]
     "sea >>> fish >>> shark" [:br] [:br]
     [:div
-     "Number of fish: " [:b (:nfish @board)] [:br]
+     "Initial number of fish: " [:b (:nfish @board)] [:br]
      [slider :nfish (:nfish @board) 0 (- area (:nsharks @board))]]
     [:div
-     "Number of sharks: " [:b (:nsharks @board)] [:br]
+     "Initial number of sharks: " [:b (:nsharks @board)] [:br]
      [slider :nsharks (:nsharks @board) 0 (- area (:nfish @board))]]
     [:div
      "Fish breed time: " [:b (:fbreed @board)] " chronons" [:br]
@@ -107,14 +105,14 @@
     "on"
     [:br]
     "Other commands:" [:br]
-    "\"c\" or swipe left to clear board " [:b "*and*"] " pause" [:br]
+    "\"c\" or swipe left to clear board" [:br]
     "\"r\" or swipe right to randomize board" [:br]
     "\"h\" or swipe up to toggle this panel" [:br]
+    "\"s\" or long touch (> 2s) to show stats"
     [:hr]
     "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
-    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]
-    "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"]]])
+    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]]])
 
 (defn- stats-graph []
   [:svg.stats {:id "svg.stats" :width "100%" :height "100%"}
@@ -228,7 +226,7 @@
               (set! touchstart {:x (-> event.changedTouches (aget 0) (aget "pageX"))
                                 :y (-> event.changedTouches (aget 0) (aget "pageY"))
                                 :t (.getTime (js/Date.))})
-              (set! timeout-timer (js/setTimeout #(toggle-modal "stats") 3000))))))
+              (set! timeout-timer (js/setTimeout #(toggle-modal "stats") 2000))))))
 
 (defn- touchend-handler [event]
   (let [touchend {:x (-> event.changedTouches (aget 0) (aget "pageX"))
