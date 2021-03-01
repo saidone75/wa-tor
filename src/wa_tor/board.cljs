@@ -118,7 +118,8 @@
 (defn- stats-graph! [fish sharks]
   (set! history (vec (drop 1 (conj history [fish sharks]))))
   [:svg.stats {:id "svg.stats" :width "100%" :height "100%"}
-   (if (= "complete" (aget js/document "readyState"))
+   (if (and (= "complete" (aget js/document "readyState"))
+            (not (= "modal" (aget (.getElementById js/document "stats") "classList"))))
      (let [height (aget (.getElementById js/document "svg.stats") "clientHeight")
            width (aget (.getElementById js/document "svg.stats") "clientWidth")
            stepx (/ width (count history))
