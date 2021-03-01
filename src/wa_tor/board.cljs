@@ -37,7 +37,7 @@
 ;; chronon counter
 (def chronon 0)
 ;; magnify sharks stats
-(swap! board assoc :magnify-sharks false)
+(swap! board assoc :magnify-sharks 1)
 
 (defn clear-stats! []
   (set! history (vec (take history-size (repeat []))))
@@ -59,9 +59,9 @@
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
-(defn slider [param value min max]
+(defn slider [param value min max width]
   [:input {:type "range" :value value :min min :max max
-           :style {:width "80%"}
+           :style {:width (if-not (nil? width) (str width "%") "80%")}
            :onChange (fn [e]
                        (let [new-value (js/parseInt (.. e -target -value))]
                          (swap! board assoc param new-value)))}])
@@ -123,8 +123,7 @@
      (let [height (aget (.getElementById js/document "svg.stats") "clientHeight")
            width (aget (.getElementById js/document "svg.stats") "clientWidth")
            stepx (/ width (count history))
-           sw 3
-           magnify-sharks (if (:magnify-sharks @board) 4 1)]
+           sw 3]
        (conj
         (loop [history history x 0 blocks '()]
           (if (< (count history) 2) blocks
@@ -137,8 +136,8 @@
                                                          :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
                            ^{:key (random-uuid)} [:line {:x1 x
                                                          :x2 (+ x stepx)
-                                                         :y1 (+ (- height sw) (* magnify-sharks -1 (- height (* 2 sw)) (/ (second (first history)) area)))
-                                                         :y2 (+ (- height sw) (* magnify-sharks -1 (- height (* 2 sw)) (/ (second (second history)) area)))
+                                                         :y1 (+ (- height sw) (* (:magnify-sharks @board) -1 (- height (* 2 sw)) (/ (second (first history)) area)))
+                                                         :y2 (+ (- height sw) (* (:magnify-sharks @board) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
                                                          :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}])))))))])
 
 (defn- stats! []
@@ -156,12 +155,10 @@
       [:div
        (stats-graph)
        [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]
-       "Magnify sharks: " [:b (str(:magnify-sharks @board))] [:br]
-       "1x"
-       [:label {:class "switch"}
-        [checkbox :magnify-sharks]
-        [:span {:class "slider"}]]
-       "4x"
+       "Magnify sharks: " [:b (str (:magnify-sharks @board) "x")] [:br]
+       "1x "
+       [slider :magnify-sharks (:magnify-sharks @board) 1 4 16]
+       " 4x"
        ])]])
 
 (defn- block [id x y color]
