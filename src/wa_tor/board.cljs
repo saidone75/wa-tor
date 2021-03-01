@@ -160,8 +160,8 @@
        [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]
        "Magnify sharks: " [:b (str (:magnify-sharks @board) "x")] [:br]
        "1x "
-       [slider :magnify-sharks (:magnify-sharks @board) 1 4 20]
-       " 4x"
+       [slider :magnify-sharks (:magnify-sharks @board) 1 5 20]
+       " 5x"
        ])]])
 
 (defn- block [id x y color]
