@@ -32,9 +32,14 @@
 (swap! board assoc :random true)
 
 ;; history for stats
-(defonce history-size 1000)
+(defonce history-size 500)
+;; default stats window width
 (swap! board assoc :history-window 200)
+;; history buffer
 (def history (vec (take history-size (repeat []))))
+;; unique id for lines
+(defonce line-id (atom 0))
+
 ;; chronon counter
 (def chronon 0)
 ;; magnify sharks stats
@@ -130,17 +135,20 @@
            width (aget (.getElementById js/document "svg.stats") "clientWidth")
            stepx (/ width (:history-window @board))
            sw 3]
+       (reset! line-id 0)
        (conj
         (loop [history (take-last (:history-window @board) history) x 0 blocks '()]
           (if (< (count history) 2) blocks
               (recur (drop 1 history) (+ x stepx)
                      (conj blocks
-                           ^{:key (random-uuid)} [:line {:x1 x
+                           ^{:key (swap! line-id inc)} [:line
+                                                        {:x1 x
                                                          :x2 (+ x stepx)
                                                          :y1 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (first history)) area)))
                                                          :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (second history)) area)))
                                                          :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
-                           ^{:key (random-uuid)} [:line {:x1 x
+                           ^{:key (swap! line-id inc)} [:line
+                                                        {:x1 x
                                                          :x2 (+ x stepx)
                                                          :y1 (+ (- height sw) (* (:magnify-sharks @board) -1 (- height (* 2 sw)) (/ (second (first history)) area)))
                                                          :y2 (+ (- height sw) (* (:magnify-sharks @board) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
@@ -167,8 +175,8 @@
        " 5x" [:br]
        "Stats history window width: " [:b (:history-window @board)] " chronons"[:br]
        "100 "
-       [slider :history-window (:history-window @board) 100 1000 20 100]
-       " 1000"
+       [slider :history-window (:history-window @board) 100 500 20 100]
+       " 500"
        ])]])
 
 (defn- block [id x y color]
