@@ -32,7 +32,8 @@
 (swap! board assoc :random true)
 
 ;; history for stats
-(defonce history-size 200)
+(defonce history-size 1000)
+(swap! board assoc :history-window 200)
 (def history (vec (take history-size (repeat []))))
 ;; chronon counter
 (def chronon 0)
@@ -63,9 +64,10 @@
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
-(defn slider [param value min max width]
+(defn slider [param value min max width step]
   [:input {:type "range" :value value :min min :max max
            :style {:width (if-not (nil? width) (str width "%") "80%")}
+           :step (str step)
            :onChange (fn [e]
                        (let [new-value (js/parseInt (.. e -target -value))]
                          (swap! board assoc param new-value)))}])
@@ -126,10 +128,10 @@
             (not (= "modal" (aget (.getElementById js/document "stats") "classList"))))
      (let [height (aget (.getElementById js/document "svg.stats") "clientHeight")
            width (aget (.getElementById js/document "svg.stats") "clientWidth")
-           stepx (/ width (count history))
+           stepx (/ width (:history-window @board))
            sw 3]
        (conj
-        (loop [history history x 0 blocks '()]
+        (loop [history (take-last (:history-window @board) history) x 0 blocks '()]
           (if (< (count history) 2) blocks
               (recur (drop 1 history) (+ x stepx)
                      (conj blocks
@@ -162,7 +164,11 @@
        "Magnify sharks: " [:b (str (:magnify-sharks @board) "x")] [:br]
        "1x "
        [slider :magnify-sharks (:magnify-sharks @board) 1 5 20]
-       " 5x"
+       " 5x" [:br]
+       "Stats history window width: " [:b (:history-window @board)] " chronons"[:br]
+       "100 "
+       [slider :history-window (:history-window @board) 100 1000 20 100]
+       " 1000"
        ])]])
 
 (defn- block [id x y color]
