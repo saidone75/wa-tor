@@ -1,0 +1,8 @@
+^{:watch-dirs ["src"]
+  :css-dirs ["resources/public/css"]
+  :auto-testing true
+  }
+{:main wa-tor.core
+ :output-to "resources/public/wa-tor.js"
+ :output-dir "target/public/js/out"
+ }

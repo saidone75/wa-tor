@@ -14,4 +14,4 @@ pom.xml.asc
 .nrepl-port
 .cpcache/
 .rebel_readline_history
-/resources/public/cljs-out
+/resources/public/*.js
