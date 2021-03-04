@@ -70,18 +70,18 @@
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
-(defn slider [param value min max width step]
+(defn slider [atom key value min max width step]
   [:input {:type "range" :value value :min min :max max
            :style {:width (if-not (nil? width) (str width "%") "80%")}
            :step (str step)
            :onChange (fn [e]
                        (let [new-value (js/parseInt (.. e -target -value))]
-                         (swap! board assoc param new-value)))}])
+                         (swap! atom assoc key new-value)))}])
 
-(defn checkbox [param]
-  [:input {:type :checkbox :checked (param @board)
+(defn checkbox [atom key]
+  [:input {:type :checkbox :checked (key @atom)
            :onChange (fn [e]
-                       (swap! board assoc param (not (param @board))))}])
+                       (swap! atom assoc key (not (key @board))))}])
 
 (defn- modal []
   [:div.modal {:id "usage"}
@@ -93,33 +93,34 @@
             :onClick #(toggle-modal "usage")} "[X]"]
     [:b [:pre "   USAGE"]]
     [:table {:class "usage"}
-     [:tr [:td "pause/resume"] [:td "spacebar or two fingers tap"]]
-     [:tr [:td "clear board"] [:td "\"C\" or swipe left"]]
-     [:tr [:td "randomize board"] [:td "\"R\" or swipe right"]]
-     [:tr [:td "toggle usage panel"] [:td "\"H\" or swipe up"]]
-     [:tr [:td "show stats"] [:td "\"S\" or long touch (> 2s)"]]]
+     [:tbody
+      [:tr [:td "pause/resume"] [:td "spacebar or two fingers tap"]]
+      [:tr [:td "clear board"] [:td "\"C\" or swipe left"]]
+      [:tr [:td "randomize board"] [:td "\"R\" or swipe right"]]
+      [:tr [:td "toggle usage panel"] [:td "\"H\" or swipe up"]]
+      [:tr [:td "show stats"] [:td "\"S\" or long touch (> 2s)"]]]]
     [:br]
     "when paused click/tap a square to cycle between" [:br]
     "sea >>> fish >>> shark" [:br] [:br]
     [:div
      "Initial number of fish: " [:b (:nfish @board)] [:br]
-     [slider :nfish (:nfish @board) 0 (- area (:nsharks @board))]]
+     [slider board :nfish (:nfish @board) 0 (- area (:nsharks @board))]]
     [:div
      "Initial number of sharks: " [:b (:nsharks @board)] [:br]
-     [slider :nsharks (:nsharks @board) 0 (- area (:nfish @board))]]
+     [slider board :nsharks (:nsharks @board) 0 (- area (:nfish @board))]]
     [:div
      "Fish breed time: " [:b (:fbreed @board)] " chronons" [:br]
-     [slider :fbreed (:fbreed @board) 1 20]]
+     [slider board :fbreed (:fbreed @board) 1 20]]
     [:div
      "Shark breed time: " [:b (:sbreed @board)] " chronons" [:br]
-     [slider :sbreed (:sbreed @board) 1 20]]
+     [slider board :sbreed (:sbreed @board) 1 20]]
     [:div
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
-     [slider :starve (:starve @board) 1 20]]
+     [slider board :starve (:starve @board) 1 20]]
     "Extra randomness: " [:b (if (= true (:random @board)) "on" "off")] [:br]
     "off"
     [:label {:class "switch"}
-     [checkbox :random]
+     [checkbox board :random]
      [:span {:class "slider"}]]
     "on"
     [:br]
@@ -174,11 +175,11 @@
        [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]
        "Magnify sharks: " [:b (str (:magnify-sharks @stats) "x")] [:br]
        "1x "
-       [slider :magnify-sharks (:magnify-sharks @stats) 1 5 20]
+       [slider stats :magnify-sharks (:magnify-sharks @stats) 1 5 20]
        " 5x" [:br]
        "Stats history window width: " [:b (:history-window @stats)] " chronons"[:br]
        "100 "
-       [slider :history-window (:history-window @stats) 100 500 20 100]
+       [slider stats :history-window (:history-window @stats) 100 500 20 100]
        " 500"
        ])]])
 
