@@ -6,6 +6,11 @@
 
   :min-lein-version "2.7.1"
 
+  :plugins [[com.chartbeat.cljbeat/lein-assemble "0.1.2"]]
+
+  :assemble {:filesets {"htdocs" [["resources/public/*"]]}
+             :archive {:format :tgz :root-dir ""}}
+
   :dependencies [[org.clojure/clojure "1.10.2"]
                  [org.clojure/clojurescript "1.10.773"]
                  [reagent "1.0.0"]]
@@ -17,5 +22,4 @@
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "wa-tor"]}
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.12"]
-                                  [com.bhauman/rebel-readline-cljs "0.1.4"]]
-                   }})
+                                  [com.bhauman/rebel-readline-cljs "0.1.4"]]}})
