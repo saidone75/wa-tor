@@ -31,20 +31,20 @@
 ;; extra randomness on by default
 (swap! board assoc :random true)
 
-;;stats
+;; stats
 (defonce stats (atom {}))
-;; history for stats
-(defonce history-size 500)
 ;; default stats window width
 (swap! stats assoc :history-window 200)
+;; magnify sharks stats
+(swap! stats assoc :magnify-sharks 1)
+;; history for stats
+(defonce history-size 500)
 ;; history buffer
 (defonce history (vec (take history-size (repeat []))))
 ;; unique id for lines
 (defonce line-id (atom 0))
 ;; chronon counter
 (defonce chronon 0)
-;; magnify sharks stats
-(swap! stats assoc :magnify-sharks 1)
 
 (defn clear-stats! []
   (set! history (vec (take history-size (repeat []))))
