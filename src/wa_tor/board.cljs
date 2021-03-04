@@ -98,7 +98,7 @@
      [:tr [:td "toggle usage panel"] [:td "\"H\" or swipe up"]]
      [:tr [:td "show stats"] [:td "\"S\" or long touch (> 2s)"]]]
     [:br]
-    "click on a square to cycle between" [:br]
+    "when paused click/tap a square to cycle between" [:br]
     "sea >>> fish >>> shark" [:br] [:br]
     [:div
      "Initial number of fish: " [:b (:nfish @board)] [:br]
@@ -115,7 +115,7 @@
     [:div
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
      [slider :starve (:starve @board) 1 20]]
-    "Extra randomness: " [:b (str(:random @board))] [:br]
+    "Extra randomness: " [:b (if (= true (:random @board)) "on" "off")] [:br]
     "off"
     [:label {:class "switch"}
      [checkbox :random]
@@ -125,6 +125,7 @@
     [:hr]
     "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
+    "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"] [:br]
     "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"]
     [:hr]]])
 
