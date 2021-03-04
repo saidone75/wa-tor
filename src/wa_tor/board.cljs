@@ -38,11 +38,11 @@
 ;; default stats window width
 (swap! stats assoc :history-window 200)
 ;; history buffer
-(def history (vec (take history-size (repeat []))))
+(defonce history (vec (take history-size (repeat []))))
 ;; unique id for lines
 (defonce line-id (atom 0))
 ;; chronon counter
-(def chronon 0)
+(defonce chronon 0)
 ;; magnify sharks stats
 (swap! stats assoc :magnify-sharks 1)
 
@@ -245,7 +245,7 @@
 (defonce touchstart {})
 (defonce swipe-threshold (/ window-width 3))
 (defonce time-threshold {:min 180 :max 1000})
-(def timeout-timer)
+(defonce timeout-timer nil)
 
 (defn- touchstart-handler [event]
   (if (.getElementById js/document "board")
