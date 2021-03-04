@@ -70,18 +70,18 @@
         (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
         :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
-(defn slider [atom key value min max width step]
+(defn slider [reference key value min max width step]
   [:input {:type "range" :value value :min min :max max
            :style {:width (if-not (nil? width) (str width "%") "80%")}
            :step (str step)
            :onChange (fn [e]
                        (let [new-value (js/parseInt (.. e -target -value))]
-                         (swap! atom assoc key new-value)))}])
+                         (swap! reference assoc key new-value)))}])
 
-(defn checkbox [atom key]
-  [:input {:type :checkbox :checked (key @atom)
+(defn checkbox [reference key]
+  [:input {:type :checkbox :checked (key @reference)
            :onChange (fn [e]
-                       (swap! atom assoc key (not (key @board))))}])
+                       (swap! reference assoc key (not (key @reference))))}])
 
 (defn- modal []
   [:div.modal {:id "usage"}
