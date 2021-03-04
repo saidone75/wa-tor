@@ -31,19 +31,20 @@
 ;; extra randomness on by default
 (swap! board assoc :random true)
 
+;;stats
+(defonce stats (atom {}))
 ;; history for stats
 (defonce history-size 500)
 ;; default stats window width
-(swap! board assoc :history-window 200)
+(swap! stats assoc :history-window 200)
 ;; history buffer
 (def history (vec (take history-size (repeat []))))
 ;; unique id for lines
 (defonce line-id (atom 0))
-
 ;; chronon counter
 (def chronon 0)
 ;; magnify sharks stats
-(swap! board assoc :magnify-sharks 1)
+(swap! stats assoc :magnify-sharks 1)
 
 (defn clear-stats! []
   (set! history (vec (take history-size (repeat []))))
@@ -135,11 +136,11 @@
             (not (= "modal" (aget (.getElementById js/document "stats") "classList"))))
      (let [height (aget (.getElementById js/document "svg.stats") "clientHeight")
            width (aget (.getElementById js/document "svg.stats") "clientWidth")
-           stepx (/ width (:history-window @board))
+           stepx (/ width (:history-window @stats))
            sw 3]
        (reset! line-id 0)
        (conj
-        (loop [history (take-last (:history-window @board) history) x 0 blocks '()]
+        (loop [history (take-last (:history-window @stats) history) x 0 blocks '()]
           (if (< (count history) 2) blocks
               (recur (drop 1 history) (+ x stepx)
                      (conj blocks
@@ -152,8 +153,8 @@
                            ^{:key (swap! line-id inc)} [:line
                                                         {:x1 x
                                                          :x2 (+ x stepx)
-                                                         :y1 (+ (- height sw) (* (:magnify-sharks @board) -1 (- height (* 2 sw)) (/ (second (first history)) area)))
-                                                         :y2 (+ (- height sw) (* (:magnify-sharks @board) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
+                                                         :y1 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (first history)) area)))
+                                                         :y2 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
                                                          :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}])))))))])
 
 (defn- stats! []
@@ -171,13 +172,13 @@
       [:div
        (stats-graph)
        [:pre "fish: " [:b fish] " - sharks: " [:b sharks] " - chronon:" [:b chronon]]
-       "Magnify sharks: " [:b (str (:magnify-sharks @board) "x")] [:br]
+       "Magnify sharks: " [:b (str (:magnify-sharks @stats) "x")] [:br]
        "1x "
-       [slider :magnify-sharks (:magnify-sharks @board) 1 5 20]
+       [slider :magnify-sharks (:magnify-sharks @stats) 1 5 20]
        " 5x" [:br]
-       "Stats history window width: " [:b (:history-window @board)] " chronons"[:br]
+       "Stats history window width: " [:b (:history-window @stats)] " chronons"[:br]
        "100 "
-       [slider :history-window (:history-window @board) 100 500 20 100]
+       [slider :history-window (:history-window @stats) 100 500 20 100]
        " 500"
        ])]])
 
