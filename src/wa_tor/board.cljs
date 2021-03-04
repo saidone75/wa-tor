@@ -91,8 +91,13 @@
     [:span {:class "close-button"
             :onClick #(toggle-modal "usage")} "[X]"]
     [:b [:pre "   USAGE"]]
-    "Pause/resume the game by pressing spacebar" [:br]
-    "or tapping with two fingers" [:br] [:br]
+    [:table {:class "usage"}
+     [:tr [:td "pause/resume"] [:td "spacebar or two fingers tap"]]
+     [:tr [:td "clear board"] [:td "\"C\" or swipe left"]]
+     [:tr [:td "randomize board"] [:td "\"R\" or swipe right"]]
+     [:tr [:td "toggle usage panel"] [:td "\"H\" or swipe up"]]
+     [:tr [:td "show stats"] [:td "\"S\" or long touch (> 2s)"]]]
+    [:br]
     "click on a square to cycle between" [:br]
     "sea >>> fish >>> shark" [:br] [:br]
     [:div
@@ -117,15 +122,11 @@
      [:span {:class "slider"}]]
     "on"
     [:br]
-    "Other commands:" [:br]
-    "\"c\" or swipe left to clear board" [:br]
-    "\"r\" or swipe right to randomize board" [:br]
-    "\"h\" or swipe up to toggle this panel" [:br]
-    "\"s\" or long touch (> 2s) to show stats"
     [:hr]
     "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
-    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"] [:br]]])
+    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"]
+    [:hr]]])
 
 (defn- stats-graph []
   [:svg.stats {:id "svg.stats" :width "100%" :height "100%"}
