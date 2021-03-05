@@ -94,14 +94,15 @@
     [:b [:pre "   USAGE"]]
     [:table {:class "usage"}
      [:tbody
-      [:tr [:td "pause/resume"] [:td "spacebar or two fingers tap"]]
-      [:tr [:td "clear board"] [:td "\"C\" or swipe left"]]
-      [:tr [:td "randomize board"] [:td "\"R\" or swipe right"]]
-      [:tr [:td "toggle usage panel"] [:td "\"H\" or swipe up"]]
-      [:tr [:td "show stats"] [:td "\"S\" or long touch (> 2s)"]]]]
+      [:tr [:th "COMMAND"] [:th "KEYBOARD"] [:th "TOUCH"]] 
+      [:tr [:td "pause/resume"] [:td "spacebar"] [:td "two fingers tap"]]
+      [:tr [:td "clear board"] [:td "C"] [:td "swipe left"]]
+      [:tr [:td "randomize board"] [:td "R"] [:td "swipe right"]]
+      [:tr [:td "toggle usage panel"] [:td "H"] [:td "swipe up"]]
+      [:tr [:td "show stats"] [:td "S"] [:td "long touch (> 2s)"]]]]
     [:br]
     "when paused click/tap a square to cycle between" [:br]
-    "sea >>> fish >>> shark" [:br] [:br]
+    "water >>> fish >>> shark" [:br] [:br]
     [:div
      "Initial number of fish: " [:b (:nfish @board)] [:br]
      [slider board :nfish (:nfish @board) 0 (- area (:nsharks @board))]]
