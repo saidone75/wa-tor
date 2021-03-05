@@ -28,17 +28,17 @@
 (swap! board assoc :fbreed 3)
 (swap! board assoc :sbreed 10)
 (swap! board assoc :starve 3)
-;; extra randomness on by default
+;; extra randomness active by default
 (swap! board assoc :random true)
 
 ;; stats
 (defonce stats (atom {}))
 ;; default stats window width
-(swap! stats assoc :history-window 200)
+(swap! stats assoc :history-window 250)
 ;; magnify sharks stats
 (swap! stats assoc :magnify-sharks 1)
 ;; history for stats
-(defonce history-size 500)
+(defonce history-size 400)
 ;; history buffer
 (defonce history (vec (take history-size (repeat []))))
 ;; unique id for lines
@@ -179,9 +179,8 @@
        " 5x" [:br]
        "Stats history window width: " [:b (:history-window @stats)] " chronons"[:br]
        "100 "
-       [slider stats :history-window (:history-window @stats) 100 500 20 100]
-       " 500"
-       ])]])
+       [slider stats :history-window (:history-window @stats) 100 400 20 50]
+       " 400"])]])
 
 (defn- block [id x y color]
   [:rect {:id id
@@ -190,8 +189,7 @@
           :fill color
           :on-click #(toggle id)
           :width "14px"
-          :height "14px"
-          }])
+          :height "14px"}])
 
 (defn- draw-board []
   (let [{w :w h :h board :board} @board]
