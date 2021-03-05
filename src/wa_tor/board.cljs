@@ -142,10 +142,10 @@
            sw 3]
        (reset! line-id 0)
        (conj
-        (loop [history (take-last (:history-window @stats) history) x 0 blocks '()]
-          (if (< (count history) 2) blocks
+        (loop [history (take-last (:history-window @stats) history) x 0 lines '()]
+          (if (> 2 (count history)) lines
               (recur (drop 1 history) (+ x stepx)
-                     (conj blocks
+                     (conj lines
                            ^{:key (swap! line-id inc)} [:line
                                                         {:x1 x
                                                          :x2 (+ x stepx)
@@ -162,7 +162,7 @@
 (defn- stats! []
   [:div.modal {:id "stats"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
-                                 (if (> ratio 1)
+                                 (if (< 1 ratio)
                                    "modal-content-large"
                                    "modal-content-small"))}
     [:span {:class "close-button"
