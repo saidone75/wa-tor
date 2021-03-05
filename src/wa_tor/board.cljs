@@ -94,7 +94,7 @@
     [:b [:pre "   USAGE"]]
     [:table {:class "usage"}
      [:tbody
-      [:tr [:th "COMMAND"] [:th "KEYBOARD"] [:th "TOUCH"]] 
+      [:tr [:th "COMMAND"] [:th "KEYBOARD"] [:th "TOUCHSCREEN"]] 
       [:tr [:td "pause/resume"] [:td "spacebar"] [:td "two fingers tap"]]
       [:tr [:td "clear board"] [:td "C"] [:td "swipe left"]]
       [:tr [:td "randomize board"] [:td "R"] [:td "swipe right"]]
