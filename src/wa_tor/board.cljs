@@ -58,7 +58,7 @@
   (-> (.getElementById js/document id) (aget "classList") (.toggle "show-modal")))
 
 (defn- show-stats []
-  (if-not (= "modal show-modal" (-> (.getElementById js/document "usage") (aget "classList") (aget "value")))
+  (when-not (= "modal show-modal" (-> (.getElementById js/document "usage") (aget "classList") (aget "value")))
     (-> (.getElementById js/document "stats") (aget "classList") (.add "show-modal"))))
 
 (defn- toggle [id]
@@ -80,7 +80,7 @@
 
 (defn checkbox [reference key]
   [:input {:type :checkbox :checked (key @reference)
-           :onChange (fn [e]
+           :onChange (fn []
                        (swap! reference assoc key (not (key @reference))))}])
 
 (defn- modal []
@@ -134,8 +134,8 @@
 
 (defn- stats-graph []
   [:svg.stats {:id "svg.stats" :width "100%" :height "100%"}
-   (if (and (= "complete" (aget js/document "readyState"))
-            (not (= "modal" (aget (.getElementById js/document "stats") "classList"))))
+   (when (and (= "complete" (aget js/document "readyState"))
+              (not (= "modal" (aget (.getElementById js/document "stats") "classList"))))
      (let [height (aget (.getElementById js/document "svg.stats") "clientHeight")
            width (aget (.getElementById js/document "svg.stats") "clientWidth")
            stepx (/ width (:history-window @stats))
@@ -221,25 +221,25 @@
          (apply merge (map array-map (range area)))))
 
 (defn- update-board! []
-  (if (:start @state)
+  (when (:start @state)
     (let [prev-board (logic/sh-fi (:board @board))]
       (swap! board assoc :board (logic/next-chronon @board))
       (set! chronon (inc chronon))
       ;; pause the game if the board is unchanged from last chronon
-      (if (and (= (first prev-board) (first (logic/sh-fi (:board @board))))
-               (= (last prev-board) (last (logic/sh-fi (:board @board))))
-               ;; but don't pause if board is filled with sharks
-               (not (= (count (first prev-board)) area)))
+      (when (and (= (first prev-board) (first (logic/sh-fi (:board @board))))
+                 (= (last prev-board) (last (logic/sh-fi (:board @board))))
+                 ;; but don't pause if board is filled with sharks
+                 (not (= (count (first prev-board)) area)))
         (swap! state assoc :start false)))))
 
 (defn- keydown-handler [event]
-  (if (.getElementById js/document "board")
+  (let [key-code (aget event "keyCode")]
     (cond
-      (= 72 event.keyCode) (toggle-modal "usage")
-      (= 83 event.keyCode) (toggle-modal "stats")
-      (= 32 event.keyCode) (swap! state assoc :start (not (:start @state)))
-      (= 67 event.keyCode) (clear-board!)
-      (= 82 event.keyCode) (randomize-board!))))
+      (= 72 key-code) (toggle-modal "usage")
+      (= 83 key-code) (toggle-modal "stats")
+      (= 32 key-code) (swap! state assoc :start (not (:start @state)))
+      (= 67 key-code) (clear-board!)
+      (= 82 key-code) (randomize-board!))))
 
 (defonce touchstart {})
 (defonce swipe-threshold (/ window-width 3))
@@ -247,40 +247,42 @@
 (defonce timeout-timer nil)
 
 (defn- touchstart-handler [event]
-  (if (.getElementById js/document "board")
-    (cond
-      (= 2 event.touches.length) (swap! state assoc :start (not (:start @state)))
-      :else (do
-              (set! touchstart {:x (-> event.changedTouches (aget 0) (aget "pageX"))
-                                :y (-> event.changedTouches (aget 0) (aget "pageY"))
-                                :t (.getTime (js/Date.))})
-              (set! timeout-timer (js/setTimeout #(show-stats) 2000))))))
+  (let [touches-length (-> event (aget "touches") (aget "length"))
+        page-x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
+        page-y (-> event (aget "changedTouches") (aget 0) (aget "pageY"))]
+    (when (.getElementById js/document "board")
+      (cond
+        (= 2 touches-length) (swap! state assoc :start (not (:start @state)))
+        :else (do
+                (set! touchstart {:x page-x
+                                  :y page-y
+                                  :t (.getTime (js/Date.))})
+                (set! timeout-timer (js/setTimeout #(show-stats) 2000)))))))
 
 (defn- touchend-handler [event]
-  (let [touchend {:x (-> event.changedTouches (aget 0) (aget "pageX"))
-                  :y (-> event.changedTouches (aget 0) (aget "pageY"))
+  (let [touchend {:x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
+                  :y (-> event (aget "changedTouches") (aget 0) (aget "pageY"))
                   :t (.getTime (js/Date.))}
         xdistance (- (:x touchend) (:x touchstart))
         ydistance (- (:y touchend) (:y touchstart))
         time (- (:t touchend) (:t touchstart))]
     (js/clearTimeout timeout-timer)
-    (if (and (> time (:min time-threshold)) (< time (:max time-threshold)))
+    (when (and (> time (:min time-threshold)) (< time (:max time-threshold)))
       (cond
         (< xdistance (* -1 swipe-threshold)) (clear-board!)
         (> xdistance swipe-threshold) (randomize-board!)
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
 (defn create-board! []
-  (if (nil? (:board @board))
-    (do
-      ;; a watch will take care of redraw on board change
-      (add-watch board :board #(draw-board))
-      (js/document.addEventListener "keydown" keydown-handler)
-      (js/document.addEventListener "touchstart" touchstart-handler)
-      (js/document.addEventListener "touchend" touchend-handler)
-      ;; fill initial board
-      (randomize-board!)
-      (swap! state assoc :start true)
-      ;; call update-board! every 200 ms
-      (swap! state assoc :interval (js/setInterval update-board! 200))))
+  (when (nil? (:board @board))
+    ;; a watch will take care of redraw on board change
+    (add-watch board :board #(draw-board))
+    (js/document.addEventListener "keydown" keydown-handler)
+    (js/document.addEventListener "touchstart" touchstart-handler)
+    (js/document.addEventListener "touchend" touchend-handler)
+    ;; fill initial board
+    (randomize-board!)
+    (swap! state assoc :start true)
+    ;; call update-board! every 200 ms
+    (swap! state assoc :interval (js/setInterval update-board! 200)))
   state)
