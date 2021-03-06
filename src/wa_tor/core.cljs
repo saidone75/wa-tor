@@ -3,7 +3,6 @@
 (ns ^:figwheel-hooks wa-tor.core
   (:require
    [goog.dom :as gdom]
-   [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as rdom]
    [wa-tor.board :as board]))
 
