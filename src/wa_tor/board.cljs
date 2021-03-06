@@ -247,17 +247,14 @@
 (defonce timeout-timer nil)
 
 (defn- touchstart-handler [event]
-  (let [touches-length (-> event (aget "touches") (aget "length"))
-        page-x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
-        page-y (-> event (aget "changedTouches") (aget 0) (aget "pageY"))]
-    (when (.getElementById js/document "board")
-      (cond
-        (= 2 touches-length) (swap! state assoc :start (not (:start @state)))
-        :else (do
-                (set! touchstart {:x page-x
-                                  :y page-y
-                                  :t (.getTime (js/Date.))})
-                (set! timeout-timer (js/setTimeout #(show-stats) 2000)))))))
+  (when (.getElementById js/document "board")
+    (cond
+      (= 2 (-> event (aget "touches") (aget "length"))) (swap! state assoc :start (not (:start @state)))
+      :else (do
+              (set! touchstart {:x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
+                                :y (-> event (aget "changedTouches") (aget 0) (aget "pageY"))
+                                :t (.getTime (js/Date.))})
+              (set! timeout-timer (js/setTimeout #(show-stats) 2000))))))
 
 (defn- touchend-handler [event]
   (let [touchend {:x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
