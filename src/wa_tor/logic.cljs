@@ -130,20 +130,19 @@
 
 ;; compute board for next chronon
 (defn next-chronon [current-board]
-  (do
-    ;; state map for not carrying around too many parameters
-    (set! state (dissoc current-board :board))
-    ;; set local board work copy
-    (reset! board (:board current-board))
-    ;; move all fish first 
-    (run!
-     move-fish!
-     ;; all fish, shuffled
-     (shuffle (map key (filter #(= 'fish (:type (val %))) @board))))
-    ;; move all sharks
-    (run!
-     move-shark!
-     ;; all sharks, shuffled
-     (shuffle (map key (filter #(= 'shark (:type (val %))) @board))))
-    ;; return updated board
-    @board))
+  ;; state map for not carrying around too many parameters
+  (set! state (dissoc current-board :board))
+  ;; set local board work copy
+  (reset! board (:board current-board))
+  ;; move all fish first 
+  (run!
+   move-fish!
+   ;; all fish, shuffled
+   (shuffle (map key (filter #(= 'fish (:type (val %))) @board))))
+  ;; move all sharks
+  (run!
+   move-shark!
+   ;; all sharks, shuffled
+   (shuffle (map key (filter #(= 'shark (:type (val %))) @board))))
+  ;; return updated board
+  @board)
