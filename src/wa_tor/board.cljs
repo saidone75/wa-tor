@@ -168,8 +168,7 @@
     [:span {:class "close-button"
             :onClick #(toggle-modal "stats")} "[X]"]
     [:b [:pre "   STATS"]]
-    (let [fish (count (filter #(= 'fish (:type (val %))) (:board @board)))
-          sharks (count (filter #(= 'shark (:type (val %))) (:board @board)))]
+    (let [[sharks fish] (map count (logic/sh-fi (:board @board)))]
       (set! history (vec (drop 1 (conj history [fish sharks]))))
       [:div
        (stats-graph)

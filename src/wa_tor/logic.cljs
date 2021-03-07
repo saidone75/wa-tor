@@ -10,9 +10,8 @@
 ;;normally distributed random int
 (defn- normal-random-int []
   (Math/round
-   (*
-    (Math/cos (* 2 Math/PI (rand)))
-    (Math/sqrt (* -2 (Math/log (rand)))))))
+   (* (Math/cos (* 2 Math/PI (rand)))
+      (Math/sqrt (* -2 (Math/log (rand)))))))
 
 ;; add randomness to threshold
 (defn- randomize [threshold]
@@ -134,15 +133,16 @@
   (set! state (dissoc current-board :board))
   ;; set local board work copy
   (reset! board (:board current-board))
-  ;; move all fish first 
-  (run!
-   move-fish!
-   ;; all fish, shuffled
-   (shuffle (map key (filter #(= 'fish (:type (val %))) @board))))
-  ;; move all sharks
-  (run!
-   move-shark!
-   ;; all sharks, shuffled
-   (shuffle (map key (filter #(= 'shark (:type (val %))) @board))))
+  (let [[sharks fish] (sh-fi @board)]
+    ;; move all fish
+    (run!
+     move-fish!
+     ;; all fish, shuffled
+     (shuffle fish))
+    ;; move all sharks
+    (run!
+     move-shark!
+     ;; all sharks, shuffled
+     (shuffle sharks)))
   ;; return updated board
   @board)
