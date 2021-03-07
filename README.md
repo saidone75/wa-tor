@@ -24,6 +24,27 @@ From the control panel you can set the initial number of fish and sharks, their 
 
 [![stats](https://i.postimg.cc/6QXB2gtv/wa-tor-stats.gif)](http://wa-tor.saidone.org)
 
+## Deploy your own
+
+Get the sources:
+
+```$ git clone https://github.com/saidone75/wa-tor.git```
+
+build with:
+
+```
+$ cd wa-tor
+$ lein do clean, fig:min, assemble
+[Figwheel] Validating figwheel-main.edn
+[Figwheel] figwheel-main.edn is valid \(ツ)/
+[Figwheel] Compiling build wa-tor to "resources/public/wa-tor.js"
+[...]
+Writing  target  ->  wa-tor-1.2-archive.tgz
+Done creating assembly
+```
+
+then just copy/expand the archive into a web server
+
 ## License
 Copyright (c) 2020-2021 Saidone
 
