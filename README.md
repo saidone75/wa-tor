@@ -20,7 +20,7 @@ When paused click on a square to cycle between water >>> fish >>> shark
 
 From the control panel you can set the initial number of fish and sharks, their breeding thresholds, sharks lifespan without food and extra randomness for thresholds:
 
-[![control-panel](https://i.postimg.cc/tRMkqHN2/wa-tor-control-panel.gif)](http://wa-tor.saidone.org)
+[![control-panel](https://i.postimg.cc/nLX8B70b/wa-tor-control-panel.gif)](http://wa-tor.saidone.org)
 
 [![stats](https://i.postimg.cc/6QXB2gtv/wa-tor-stats.gif)](http://wa-tor.saidone.org)
 
