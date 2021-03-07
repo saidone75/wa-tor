@@ -16,7 +16,7 @@ Live version [here](http://wa-tor.saidone.org)
 * "H" or "swipe up" to toggle the control panel
 * "S" or "long touch" (> 2s) to show statistics
 
-When paused click on a square to cycle between sea >>> fish >>> shark
+When paused click on a square to cycle between water >>> fish >>> shark
 
 From the control panel you can set the initial number of fish and sharks, their breeding thresholds, sharks lifespan without food and extra randomness for thresholds:
 
