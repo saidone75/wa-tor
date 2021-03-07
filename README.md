@@ -6,18 +6,23 @@ Based on [the original article](https://github.com/saidone75/wa-tor/blob/master/
 
 Live version [here](http://wa-tor.saidone.org)
 
-[![wa-tor](https://i.postimg.cc/V62MYL6y/wa-tor.png)](http://wa-tor.saidone.org)
+[![wa-tor](https://i.postimg.cc/Dw2t9XQt/wa-tor.gif)](http://wa-tor.saidone.org/)
 
 ## Usage
 
-* Pause the game to edit board, either by pressing spacebar or tapping with two fingers: then click on a square to cycle between sea >>> fish >>> shark
-* "c" or "swipe left" to clear the board and pause the game
-* "r" or "swipe right" to reset the board with the current parameters
-* "h" or "swipe up" to toggle the control panel
+* spacebar or "two fingers tap" to pause/resume the game
+* "C" or "swipe left" to clear the board and pause the game
+* "R" or "swipe right" to reset the board with the current parameters
+* "H" or "swipe up" to toggle the control panel
+* "S" or "long touch" (> 2s) to show statistics
 
-From the control panel you can set the initial number of fish and sharks, their breeding thresholds and sharks lifespan without food:
+When paused click on a square to cycle between sea >>> fish >>> shark
 
-[![control-panel](https://i.postimg.cc/9MDZ5qct/wa-tor-control-panel.png)](http://wa-tor.saidone.org)
+From the control panel you can set the initial number of fish and sharks, their breeding thresholds, sharks lifespan without food and extra randomness for thresholds:
+
+[![control-panel](https://i.postimg.cc/tRMkqHN2/wa-tor-control-panel.gif)](http://wa-tor.saidone.org)
+
+[![stats](https://i.postimg.cc/6QXB2gtv/wa-tor-stats.gif)](http://wa-tor.saidone.org)
 
 ## License
 Copyright (c) 2020-2021 Saidone
