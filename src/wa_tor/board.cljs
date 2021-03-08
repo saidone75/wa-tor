@@ -221,14 +221,14 @@
 
 (defn- update-board! []
   (when (:start @state)
-    (let [prev-board (logic/sh-fi (:board @board))]
-      (swap! board assoc :board (logic/next-chronon @board))
+    (let [[prev-sharks prev-fish] (logic/sh-fi (:board @board))
+          [sharks fish] (logic/sh-fi (:board (swap! board assoc :board (logic/next-chronon @board))))]
       (set! chronon (inc chronon))
       ;; pause the game if the board is unchanged from last chronon
-      (when (and (= (first prev-board) (first (logic/sh-fi (:board @board))))
-                 (= (last prev-board) (last (logic/sh-fi (:board @board))))
+      (when (and (= sharks prev-sharks)
+                 (= fish prev-fish)
                  ;; but don't pause if board is filled with sharks
-                 (not (= (count (first prev-board)) area)))
+                 (not (= (count sharks) area)))
         (swap! state assoc :start false)))))
 
 (defn- keydown-handler [event]
