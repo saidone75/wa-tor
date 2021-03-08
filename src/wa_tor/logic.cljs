@@ -133,16 +133,14 @@
   (set! state (dissoc current-board :board))
   ;; set local board work copy
   (reset! board (:board current-board))
-  (let [[sharks fish] (sh-fi @board)]
+  (let [[sharks fish] (map shuffle (sh-fi @board))]
     ;; move all fish
     (run!
      move-fish!
-     ;; all fish, shuffled
-     (shuffle fish))
+     fish)
     ;; move all sharks
     (run!
      move-shark!
-     ;; all sharks, shuffled
-     (shuffle sharks)))
+     sharks))
   ;; return updated board
   @board)
