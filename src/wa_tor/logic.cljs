@@ -77,8 +77,8 @@
 
 ;; retrieve sharks and fish indices
 (defn sh-fi [board]
-  [(map key (filter #(= 'shark (:type (val %))) board))
-   (map key (filter #(= 'fish (:type (val %))) board))])
+  [(keys (filter #(= 'shark (:type (val %))) board))
+   (keys (filter #(= 'fish (:type (val %))) board))])
 
 ;; move a single fish with index i
 (defn- move-fish! [i]
