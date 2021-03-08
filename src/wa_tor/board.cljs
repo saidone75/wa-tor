@@ -234,11 +234,11 @@
 (defn- keydown-handler [event]
   (let [key-code (aget event "keyCode")]
     (cond
-      (= 72 key-code) (toggle-modal "usage")
-      (= 83 key-code) (toggle-modal "stats")
       (= 32 key-code) (swap! state assoc :start (not (:start @state)))
       (= 67 key-code) (clear-board!)
-      (= 82 key-code) (randomize-board!))))
+      (= 72 key-code) (toggle-modal "usage")
+      (= 82 key-code) (randomize-board!)
+      (= 83 key-code) (toggle-modal "stats"))))
 
 (defonce touchstart {})
 (defonce swipe-threshold (/ window-width 3))
@@ -246,14 +246,13 @@
 (defonce timeout-timer nil)
 
 (defn- touchstart-handler [event]
-  (when (.getElementById js/document "board")
-    (cond
-      (= 2 (-> event (aget "touches") (aget "length"))) (swap! state assoc :start (not (:start @state)))
-      :else (do
-              (set! touchstart {:x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
-                                :y (-> event (aget "changedTouches") (aget 0) (aget "pageY"))
-                                :t (.getTime (js/Date.))})
-              (set! timeout-timer (js/setTimeout #(show-stats) 2000))))))
+  (cond
+    (= 2 (-> event (aget "touches") (aget "length"))) (swap! state assoc :start (not (:start @state)))
+    :else (do
+            (set! touchstart {:x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
+                              :y (-> event (aget "changedTouches") (aget 0) (aget "pageY"))
+                              :t (.getTime (js/Date.))})
+            (set! timeout-timer (js/setTimeout #(show-stats) 2000)))))
 
 (defn- touchend-handler [event]
   (let [touchend {:x (-> event (aget "changedTouches") (aget 0) (aget "pageX"))
@@ -273,9 +272,9 @@
   (when (nil? (:board @board))
     ;; a watch will take care of redraw on board change
     (add-watch board :board #(draw-board))
-    (js/document.addEventListener "keydown" keydown-handler)
-    (js/document.addEventListener "touchstart" touchstart-handler)
-    (js/document.addEventListener "touchend" touchend-handler)
+    (-> js/document (.addEventListener "keydown" keydown-handler))
+    (-> js/document (.addEventListener "touchstart" touchstart-handler))
+    (-> js/document (.addEventListener "touchend" touchend-handler))
     ;; fill initial board
     (randomize-board!)
     (swap! state assoc :start true)
