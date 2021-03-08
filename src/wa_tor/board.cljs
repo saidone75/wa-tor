@@ -118,7 +118,7 @@
     [:div
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
      [slider board :starve (:starve @board) 1 20]]
-    "Extra randomness: " [:b (if (= true (:random @board)) "on" "off")] [:br]
+    "Extra randomness: " [:b (if (:random @board) "on" "off")] [:br]
     "off"
     [:label {:class "switch"}
      [checkbox board :random]
