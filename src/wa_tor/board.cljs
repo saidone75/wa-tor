@@ -141,23 +141,22 @@
            stepx (/ width (:history-window @stats))
            sw 3]
        (reset! line-id 0)
-       (conj
-        (loop [history (take-last (:history-window @stats) history) x 0 lines '()]
-          (if (> 2 (count history)) lines
-              (recur (drop 1 history) (+ x stepx)
-                     (conj lines
-                           ^{:key (swap! line-id inc)} [:line
-                                                        {:x1 x
-                                                         :x2 (+ x stepx)
-                                                         :y1 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (first history)) area)))
-                                                         :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (second history)) area)))
-                                                         :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
-                           ^{:key (swap! line-id inc)} [:line
-                                                        {:x1 x
-                                                         :x2 (+ x stepx)
-                                                         :y1 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (first history)) area)))
-                                                         :y2 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
-                                                         :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}])))))))])
+       (loop [history (take-last (:history-window @stats) history) x 0 lines '()]
+         (if (> 2 (count history)) lines
+             (recur (drop 1 history) (+ x stepx)
+                    (conj lines
+                          ^{:key (swap! line-id inc)} [:line
+                                                       {:x1 x
+                                                        :x2 (+ x stepx)
+                                                        :y1 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (first history)) area)))
+                                                        :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (second history)) area)))
+                                                        :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
+                          ^{:key (swap! line-id inc)} [:line
+                                                       {:x1 x
+                                                        :x2 (+ x stepx)
+                                                        :y1 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (first history)) area)))
+                                                        :y2 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
+                                                        :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}]))))))])
 
 (defn- stats! []
   [:div.modal {:id "stats"}
