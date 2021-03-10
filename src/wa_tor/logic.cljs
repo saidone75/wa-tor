@@ -31,22 +31,14 @@
 (defn- neighbours [n w h]
   (let [[x y] (compute-coords n w)
         ;; inc x and y with wrapping logic
-        incx #(cond
-                (= %1 (dec w)) 0
-                :else (inc %1))
-        decx #(cond
-                (= %1 0) (dec w)
-                :else (dec %1))
-        incy #(cond
-                (= %1 (dec h)) 0
-                :else (inc %1))
-        decy #(cond
-                (= %1 0) (dec h)
-                :else (dec %1))]
-    [(compute-index (decx x) y w)
-     (compute-index (incx x) y w)
-     (compute-index x (decy y) w)
-     (compute-index x (incy y) w)]))
+        inc-x #(if (= %1 (dec w)) 0 (inc %1))
+        dec-x #(if (= %1 0) (dec w) (dec %1))
+        inc-y #(if (= %1 (dec h)) 0 (inc %1))
+        dec-y #(if (= %1 0) (dec h) (dec %1))]
+    [(compute-index (dec-x x) y w)
+     (compute-index (inc-x x) y w)
+     (compute-index x (dec-y y) w)
+     (compute-index x (inc-y y) w)]))
 
 ;; populate board with nfish fish and nsharks sharks, randomly placed
 (defn populate-board! [state]
