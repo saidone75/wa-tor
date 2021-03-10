@@ -25,11 +25,11 @@
 
 ;; calculate grid coords from vector index
 (defn- compute-coords [n w]
-  {:x (mod n w) :y (quot n w)})
+  [(mod n w) (quot n w)])
 
 ;; calculate vector of neighbours for seq index n
 (defn- neighbours [n w h]
-  (let [coords (compute-coords n w)
+  (let [[x y] (compute-coords n w)
         ;; inc x and y with wrapping logic
         incx #(cond
                 (= %1 (dec w)) 0
@@ -43,10 +43,10 @@
         decy #(cond
                 (= %1 0) (dec h)
                 :else (dec %1))]
-    [(compute-index (decx (:x coords)) (:y coords) w)
-     (compute-index (incx (:x coords)) (:y coords) w)
-     (compute-index (:x coords) (decy (:y coords)) w)
-     (compute-index (:x coords) (incy (:y coords)) w)]))
+    [(compute-index (decx x) y w)
+     (compute-index (incx x) y w)
+     (compute-index x (decy y) w)
+     (compute-index x (incy y) w)]))
 
 ;; populate board with nfish fish and nsharks sharks, randomly placed
 (defn populate-board! [state]
