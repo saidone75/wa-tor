@@ -55,17 +55,16 @@
                    (if (contains? fish (first candidates))
                      sharks
                      (conj sharks (first candidates))))))]
-    (loop [i 0]
-      (if (= i (* w h))
-        @board
-        (do
-          (cond
-            ;; random age between 0 and fbreed
-            (contains? fish i) (swap! board assoc i {:type 'fish :age (rand-int (inc fbreed))})
-            ;; random age between 0 and sbreed, random starve between 0 and starve
-            (contains? sharks i) (swap! board assoc i {:type 'shark :age (rand-int (inc sbreed)) :starve (rand-int (inc starve))})
-            :else (swap! board assoc i nil))
-          (recur (inc i)))))))
+    (reset! board (apply merge (map array-map (range (* w h)))))
+    (run!
+     ;; random age between 0 and fbreed
+     #(swap! board assoc % {:type 'fish :age (rand-int (inc fbreed))})
+     fish)
+    (run!
+     ;; random age between 0 and sbreed, random starve between 0 and starve
+     #(swap! board assoc % {:type 'shark :age (rand-int (inc sbreed)) :starve (rand-int (inc starve))})
+     sharks)
+    @board))
 
 ;; retrieve sharks and fish indices
 (defn sh-fi [board]
