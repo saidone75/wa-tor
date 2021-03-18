@@ -14,7 +14,6 @@
 
 (defonce state (reagent/atom {}))
 
-(def canvas nil)
 (def ctx nil)
 
 ;; original ocean size was:
@@ -151,18 +150,20 @@
          (if (> 2 (count history)) lines
              (recur (drop 1 history) (+ x stepx)
                     (conj lines
-                          ^{:key (swap! line-id inc)} [:line
-                                                       {:x1 x
-                                                        :x2 (+ x stepx)
-                                                        :y1 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (first history)) area)))
-                                                        :y2 (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (second history)) area)))
-                                                        :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
-                          ^{:key (swap! line-id inc)} [:line
-                                                       {:x1 x
-                                                        :x2 (+ x stepx)
-                                                        :y1 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (first history)) area)))
-                                                        :y2 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
-                                                        :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}]))))))])
+                          ^{:key (swap! line-id inc)}
+                          [:line
+                           {:x1 (Math/round x)
+                            :x2 (Math/round (+ x stepx))
+                            :y1 (Math/round (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (first history)) area))))
+                            :y2 (Math/round (+ (- height sw) (* -1 (- height (* 2 sw)) (/ (first (second history)) area))))
+                            :stroke "gold" :stroke-width sw :stroke-linecap "round"}]
+                          ^{:key (swap! line-id inc)}
+                          [:line
+                           {:x1 (Math/round x)
+                            :x2 (Math/round (+ x stepx))
+                            :y1 (Math/round (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (first history)) area))))
+                            :y2 (Math/round (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (second history)) area))))
+                            :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}]))))))])
 
 (defn stats! []
   [:div.modal {:id "stats"}
@@ -267,16 +268,15 @@
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
 (defn- dom-content-loaded []
-  (set! canvas (.getElementById js/document "canvas"))
-  (set! ctx (.getContext canvas "2d"))
+  (set! ctx (.getContext (.getElementById js/document "canvas") "2d"))
   (swap! state assoc :start true)
-  ;; call update-board! every 100 ms
-  (swap! state assoc :interval (js/setInterval update-board! 100)))
+  ;; a watch will take care of redraw on board change
+  (add-watch board :board #(refresh-board))
+  ;; call update-board! every 125 ms
+  (swap! state assoc :interval (js/setInterval update-board! 125)))
 
 (defn create-board! []
   (when (nil? (:board @board))
-    ;; a watch will take care of redraw on board change
-    (add-watch board :board #(refresh-board))
     (-> js/document (.addEventListener "keydown" keydown-handler))
     (-> js/document (.addEventListener "touchstart" touchstart-handler))
     (-> js/document (.addEventListener "touchend" touchend-handler))
