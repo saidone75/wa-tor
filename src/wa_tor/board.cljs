@@ -71,10 +71,10 @@
           y (quot (-> e (aget "nativeEvent") (aget "layerY")) blocksize)
           id (+ x (* y (:w @board)))
           type (:type (get (:board @board) id))]
-    (cond
-      (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :starve 0}))
-      (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
-      :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
+      (cond
+        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :starve 0}))
+        (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
+        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
 (defn slider [reference key value min max width step]
   [:input {:type "range" :value value :min min :max max
@@ -200,18 +200,15 @@
 (defn- refresh-board []
   (when (= "complete" (aget js/document "readyState"))
     (let [{w :w board :board} @board]
-      (loop [board board]
-        (when-not (empty? board)
-          (recur (do 
-                   (let [k (key (first board)) v (val (first board))]
-                     (block
-                      (* blocksize (mod k w))
-                      (* blocksize (quot k w))
-                      (cond
-                        (= 'fish (:type v)) "gold"
-                        (= 'shark (:type v)) "lightslategray"
-                        :else "aqua")))
-                   (rest board))))))))
+      (run!
+       #(block
+         (* blocksize (mod (key %) w))
+         (* blocksize (quot (key %) w))
+         (cond
+           (= 'fish (:type (val %))) "gold"
+           (= 'shark (:type (val %))) "lightslategray"
+           :else "aqua"))
+       board))))
 
 (defn- clear-board! []
   (clear-stats!)
@@ -275,7 +272,7 @@
   (swap! state assoc :start true)
   ;; call update-board! every 100 ms
   (swap! state assoc :interval (js/setInterval update-board! 100)))
-  
+
 (defn create-board! []
   (when (nil? (:board @board))
     ;; a watch will take care of redraw on board change
