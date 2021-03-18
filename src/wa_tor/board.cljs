@@ -67,8 +67,7 @@
 (defn- toggle [e]
   (if (:start @state)
     (toggle-modal "usage")
-    (let [w (:w @board)
-          x (quot (-> e (aget "nativeEvent") (aget "layerX")) blocksize)
+    (let [x (quot (-> e (aget "nativeEvent") (aget "layerX")) blocksize)
           y (quot (-> e (aget "nativeEvent") (aget "layerY")) blocksize)
           id (+ x (* y (:w @board)))
           type (:type (get (:board @board) id))]
@@ -189,30 +188,30 @@
        " 400"])]])
 
 (defn- block [x y color]
-  (when (= "complete" (aget js/document "readyState"))
-    (set! (.-fillStyle ctx) color)
-    (.beginPath ctx)
-    (.rect ctx (dec x) (dec y) (- blocksize 2) (- blocksize 2))
-    (.fill ctx)))
+  (set! (.-fillStyle ctx) color)
+  (.beginPath ctx)
+  (.rect ctx (dec x) (dec y) (- blocksize 2) (- blocksize 2))
+  (.fill ctx))
 
 (defn draw-board []
-  (let [{w :w h :h board :board} @board]
+  (let [{w :w h :h} @board]
     [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]))
 
 (defn- refresh-board []
-  (let [{w :w h :h board :board} @board]
-    (loop [board board]
-      (when-not (empty? board)
-        (recur (do 
-                 (let [k (key (first board)) v (val (first board))]
-                   (block
-                    (* blocksize (mod k w))
-                    (* blocksize (quot k w))
-                    (cond
-                      (= 'fish (:type v)) "gold"
-                      (= 'shark (:type v)) "lightslategray"
-                      :else "aqua")))
-                 (rest board)))))))
+  (when (= "complete" (aget js/document "readyState"))
+    (let [{w :w board :board} @board]
+      (loop [board board]
+        (when-not (empty? board)
+          (recur (do 
+                   (let [k (key (first board)) v (val (first board))]
+                     (block
+                      (* blocksize (mod k w))
+                      (* blocksize (quot k w))
+                      (cond
+                        (= 'fish (:type v)) "gold"
+                        (= 'shark (:type v)) "lightslategray"
+                        :else "aqua")))
+                   (rest board))))))))
 
 (defn- clear-board! []
   (clear-stats!)
@@ -270,11 +269,11 @@
         (> xdistance swipe-threshold) (randomize-board!)
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
-(defn- domcontent-loaded [event]
+(defn- dom-content-loaded []
   (set! canvas (.getElementById js/document "canvas"))
   (set! ctx (.getContext canvas "2d"))
   (swap! state assoc :start true)
-  ;; call update-board! every 200 ms
+  ;; call update-board! every 100 ms
   (swap! state assoc :interval (js/setInterval update-board! 100)))
   
 (defn create-board! []
@@ -284,7 +283,7 @@
     (-> js/document (.addEventListener "keydown" keydown-handler))
     (-> js/document (.addEventListener "touchstart" touchstart-handler))
     (-> js/document (.addEventListener "touchend" touchend-handler))
-    (-> js/document (.addEventListener "DOMContentLoaded" domcontent-loaded))
+    (-> js/document (.addEventListener "DOMContentLoaded" dom-content-loaded))
     ;; fill initial board
     (randomize-board!))
   state)
