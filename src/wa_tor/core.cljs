@@ -13,7 +13,10 @@
 
 (defn board []
   [:div {:class "outer-div"}
-   (:content @app-state)])
+   [:div.board {:id "board"}
+    (board/usage)
+    (board/stats!)
+    (board/draw-board)]])
 
 (defn mount [el]
   (rdom/render [board] el))

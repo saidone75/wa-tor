@@ -14,6 +14,9 @@
 
 (defonce state (reagent/atom {}))
 
+(def canvas nil)
+(def ctx nil)
+
 ;; original ocean size was:
 ;; 80x23 on Magi's VAX
 ;; 32x14 on A.K. Dewdney's IBM PC
@@ -61,14 +64,18 @@
   (when-not (= "modal show-modal" (-> (.getElementById js/document "usage") (aget "classList") (aget "value")))
     (-> (.getElementById js/document "stats") (aget "classList") (.add "show-modal"))))
 
-(defn- toggle [id]
+(defn- toggle [e]
   (if (:start @state)
     (toggle-modal "usage")
-    (let [type (:type (get (:board @board) id))]
-      (cond
-        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :starve 0}))
-        (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
-        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
+    (let [w (:w @board)
+          x (quot (-> e (aget "nativeEvent") (aget "layerX")) blocksize)
+          y (quot (-> e (aget "nativeEvent") (aget "layerY")) blocksize)
+          id (+ x (* y (:w @board)))
+          type (:type (get (:board @board) id))]
+    (cond
+      (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :starve 0}))
+      (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
+      :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
 
 (defn slider [reference key value min max width step]
   [:input {:type "range" :value value :min min :max max
@@ -83,7 +90,7 @@
            :onChange (fn []
                        (swap! reference assoc key (not (key @reference))))}])
 
-(defn- modal []
+(defn usage []
   [:div.modal {:id "usage"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
                                  (if (> ratio 1)
@@ -158,7 +165,7 @@
                                                         :y2 (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (second history)) area)))
                                                         :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}]))))))])
 
-(defn- stats! []
+(defn stats! []
   [:div.modal {:id "stats"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
                                  (if (< 1 ratio)
@@ -181,35 +188,31 @@
        [slider stats :history-window (:history-window @stats) 100 400 20 50]
        " 400"])]])
 
-(defn- block [id x y color]
-  [:rect {:id id
-          :x x
-          :y y
-          :fill color
-          :on-click #(toggle id)
-          :width "14px"
-          :height "14px"}])
+(defn- block [x y color]
+  (when (= "complete" (aget js/document "readyState"))
+    (set! (.-fillStyle ctx) color)
+    (.beginPath ctx)
+    (.rect ctx (dec x) (dec y) (- blocksize 2) (- blocksize 2))
+    (.fill ctx)))
 
-(defn- draw-board []
+(defn draw-board []
   (let [{w :w h :h board :board} @board]
-    (swap! state assoc :content
-           [:div.board {:id "board"}
-            (modal)
-            (stats!)
-            [:svg.board {:width (* blocksize w) :height (* blocksize h)}
-             ;; not as clean as map, but faster
-             (loop [board board blocks '()]
-               (if (empty? board)
-                 blocks
-                 (recur (rest board)
-                        (let [k (key (first board)) v (val (first board))]
-                          (conj blocks ^{:key k} [block k
-                                                  (* blocksize (mod k w))
-                                                  (* blocksize (quot k w))
-                                                  (cond
-                                                    (= 'fish (:type v)) "gold"
-                                                    (= 'shark (:type v)) "lightslategray"
-                                                    :else "aqua")])))))]])))
+    [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]))
+
+(defn- refresh-board []
+  (let [{w :w h :h board :board} @board]
+    (loop [board board]
+      (when-not (empty? board)
+        (recur (do 
+                 (let [k (key (first board)) v (val (first board))]
+                   (block
+                    (* blocksize (mod k w))
+                    (* blocksize (quot k w))
+                    (cond
+                      (= 'fish (:type v)) "gold"
+                      (= 'shark (:type v)) "lightslategray"
+                      :else "aqua")))
+                 (rest board)))))))
 
 (defn- clear-board! []
   (clear-stats!)
@@ -267,16 +270,21 @@
         (> xdistance swipe-threshold) (randomize-board!)
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
+(defn- domcontent-loaded [event]
+  (set! canvas (.getElementById js/document "canvas"))
+  (set! ctx (.getContext canvas "2d"))
+  (swap! state assoc :start true)
+  ;; call update-board! every 200 ms
+  (swap! state assoc :interval (js/setInterval update-board! 100)))
+  
 (defn create-board! []
   (when (nil? (:board @board))
     ;; a watch will take care of redraw on board change
-    (add-watch board :board #(draw-board))
+    (add-watch board :board #(refresh-board))
     (-> js/document (.addEventListener "keydown" keydown-handler))
     (-> js/document (.addEventListener "touchstart" touchstart-handler))
     (-> js/document (.addEventListener "touchend" touchend-handler))
+    (-> js/document (.addEventListener "DOMContentLoaded" domcontent-loaded))
     ;; fill initial board
-    (randomize-board!)
-    (swap! state assoc :start true)
-    ;; call update-board! every 200 ms
-    (swap! state assoc :interval (js/setInterval update-board! 200)))
+    (randomize-board!))
   state)
