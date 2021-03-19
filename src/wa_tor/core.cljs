@@ -14,8 +14,8 @@
 (defn board []
   [:div {:class "outer-div"}
    [:div.board {:id "board"}
-    (board/usage)
-    (board/stats!)
+    (board/usage-panel)
+    (board/stats-panel)
     (board/draw-board)]])
 
 (defn mount [el]
