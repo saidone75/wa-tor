@@ -8,7 +8,7 @@
 (defonce window-width  (.-innerWidth js/window))
 (defonce window-height  (.-innerHeight js/window))
 
-(defonce blocksize 16)
+(defonce blocksize 14)
 
 (defonce board (atom {}))
 
