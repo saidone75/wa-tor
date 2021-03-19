@@ -88,7 +88,7 @@
            :onChange (fn []
                        (swap! reference assoc key (not (key @reference))))}])
 
-(defn usage []
+(defn usage-panel []
   [:div.modal {:id "usage"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
                                  (if (> ratio 1)
@@ -165,7 +165,7 @@
                             :y2 (Math/round (+ (- height sw) (* (:magnify-sharks @stats) -1 (- height (* 2 sw)) (/ (second (second history)) area))))
                             :stroke "lightslategray" :stroke-width sw :stroke-linecap "round"}]))))))])
 
-(defn stats! []
+(defn stats-panel []
   [:div.modal {:id "stats"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
                                  (if (< 1 ratio)
@@ -198,7 +198,7 @@
   (let [{w :w h :h} @board]
     [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]))
 
-(defn- refresh-board []
+(defn- redraw-board []
   (when (= "complete" (aget js/document "readyState"))
     (let [{w :w board :board} @board]
       (run!
@@ -268,10 +268,11 @@
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
 (defn- dom-content-loaded []
+  ;; set context for board canvas
   (set! ctx (.getContext (.getElementById js/document "canvas") "2d"))
   (swap! state assoc :start true)
   ;; a watch will take care of redraw on board change
-  (add-watch board :board #(refresh-board))
+  (add-watch board :board #(redraw-board))
   ;; call update-board! every 125 ms
   (swap! state assoc :interval (js/setInterval update-board! 125)))
 
