@@ -41,7 +41,7 @@
      (compute-index x (inc-y y) w)]))
 
 ;; populate board with nfish fish and nsharks sharks, randomly placed
-(defn populate-board! [state]
+(defn randomize-board! [state]
   (let [{w :w h :h nfish :nfish nsharks :nsharks fbreed :fbreed sbreed :sbreed starve :starve} state
         ;; take n fish
         fish (set (take nfish (shuffle (range 0 (* w h)))))

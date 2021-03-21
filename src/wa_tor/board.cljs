@@ -14,6 +14,7 @@
 
 (defonce state (reagent/atom {}))
 
+;; drawing context for board canvas
 (def ctx nil)
 
 ;; original ocean size was:
@@ -54,7 +55,7 @@
 
 (defn- randomize-board! []
   (clear-stats!)
-  (swap! board assoc :board (logic/populate-board! (dissoc @board :board))))
+  (swap! board assoc :board (logic/randomize-board! (dissoc @board :board))))
 
 (defn- toggle-modal [id]
   (-> (.getElementById js/document id) (aget "classList") (.toggle "show-modal")))
@@ -190,9 +191,7 @@
 
 (defn- block [x y color]
   (set! (.-fillStyle ctx) color)
-  (.beginPath ctx)
-  (.rect ctx (dec x) (dec y) (- blocksize 2) (- blocksize 2))
-  (.fill ctx))
+  (.fillRect ctx (dec x) (dec y) (- blocksize 2) (- blocksize 2)))
 
 (defn draw-board []
   (let [{w :w h :h} @board]
@@ -221,6 +220,7 @@
 (defn- update-board! []
   (when (:start @state)
     (let [[prev-sharks prev-fish] (logic/sh-fi (:board @board))
+          ;; actual update happens here
           [sharks fish] (logic/sh-fi (:board (swap! board assoc :board (logic/next-chronon @board))))]
       (set! chronon (inc chronon))
       ;; pause the game if the board is unchanged from last chronon
