@@ -198,17 +198,16 @@
     [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]))
 
 (defn- redraw-board []
-  (when (= "complete" (aget js/document "readyState"))
-    (let [{w :w board :board} @board]
-      (run!
-       #(block
-         (* blocksize (mod (key %) w))
-         (* blocksize (quot (key %) w))
-         (cond
-           (= 'fish (:type (val %))) "gold"
-           (= 'shark (:type (val %))) "lightslategray"
-           :else "aqua"))
-       board))))
+  (let [{w :w board :board} @board]
+    (run!
+     #(block
+       (* blocksize (mod (key %) w))
+       (* blocksize (quot (key %) w))
+       (cond
+         (= 'fish (:type (val %))) "gold"
+         (= 'shark (:type (val %))) "lightslategray"
+         :else "aqua"))
+     board)))
 
 (defn- clear-board! []
   (clear-stats!)
