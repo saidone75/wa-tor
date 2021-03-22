@@ -191,7 +191,7 @@
 
 (defn- block [x y color]
   (set! (.-fillStyle ctx) color)
-  (.fillRect ctx (dec x) (dec y) (- blocksize 2) (- blocksize 2)))
+  (.fillRect ctx (inc x) (inc y) (- blocksize 2) (- blocksize 2)))
 
 (defn draw-board []
   (let [{w :w h :h} @board]
