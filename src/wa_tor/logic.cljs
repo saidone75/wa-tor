@@ -29,16 +29,11 @@
 
 ;; calculate vector of neighbours for seq index n
 (defn- neighbours [n w h]
-  (let [[x y] (compute-coords n w)
-        ;; inc x and y with wrapping logic
-        inc-x #(if (= %1 (dec w)) 0 (inc %1))
-        dec-x #(if (= %1 0) (dec w) (dec %1))
-        inc-y #(if (= %1 (dec h)) 0 (inc %1))
-        dec-y #(if (= %1 0) (dec h) (dec %1))]
-    [(compute-index (dec-x x) y w)
-     (compute-index (inc-x x) y w)
-     (compute-index x (dec-y y) w)
-     (compute-index x (inc-y y) w)]))
+  (let [[x y] (compute-coords n w)]
+    [(compute-index (mod (dec x) w) y w)
+     (compute-index (mod (inc x) w) y w)
+     (compute-index x (mod (dec y) h) w)
+     (compute-index x (mod (inc y) h) w)]))
 
 ;; populate board with nfish fish and nsharks sharks, randomly placed
 (defn randomize-board! [state]
