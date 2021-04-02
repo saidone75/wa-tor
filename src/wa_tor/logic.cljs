@@ -19,21 +19,13 @@
     (max 1 (+ (normal-random-int) threshold))
     threshold))
 
-;; calculate vector index from coords
-(defn- compute-index [x y w]
-  (+ x (* y w)))
-
-;; calculate grid coords from vector index
-(defn- compute-coords [n w]
-  [(mod n w) (quot n w)])
-
 ;; calculate vector of neighbours for seq index n
 (defn- neighbours [n w h]
-  (let [[x y] (compute-coords n w)]
-    [(compute-index (mod (dec x) w) y w)
-     (compute-index (mod (inc x) w) y w)
-     (compute-index x (mod (dec y) h) w)
-     (compute-index x (mod (inc y) h) w)]))
+  (let [x (mod n w) y (quot n w)]
+    [(+ (mod (dec x) w) (* y w))
+     (+ (mod (inc x) w) (* y w))
+     (+ x (* (mod (dec y) h) w))
+     (+ x (* (mod (inc y) h) w))]))
 
 ;; populate board with nfish fish and nsharks sharks, randomly placed
 (defn randomize-board! [state]
