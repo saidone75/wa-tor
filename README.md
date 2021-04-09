@@ -39,7 +39,7 @@ $ lein do clean, fig:min, assemble
 [Figwheel] figwheel-main.edn is valid \(ツ)/
 [Figwheel] Compiling build wa-tor to "resources/public/wa-tor.js"
 [...]
-Writing  target  ->  wa-tor-1.2-archive.tgz
+Writing  target  ->  wa-tor-1.3-archive.tgz
 Done creating assembly
 ```
 
