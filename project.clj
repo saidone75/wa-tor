@@ -21,5 +21,5 @@
             "fig:build" ["trampoline" "run" "-m" "figwheel.main" "-b" "wa-tor" "-r"]
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "wa-tor"]}
 
-  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.12"]
+  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.13"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]}})
