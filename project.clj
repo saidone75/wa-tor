@@ -1,4 +1,4 @@
-(defproject wa-tor "1.3"
+(defproject wa-tor "1.4-SNAPSHOT"
   :description "A population dynamics simulation devised by A.K. Dewdney."
   :url "http://wa-tor.saidone.org"
   :license {:name "MIT"
@@ -12,7 +12,7 @@
              :archive {:format :tgz :root-dir ""}}
 
   :dependencies [[org.clojure/clojure "1.10.3"]
-                 [org.clojure/clojurescript "1.10.844"]
+                 [org.clojure/clojurescript "1.10.866"]
                  [reagent "1.0.0"]]
 
   :source-paths ["src"]

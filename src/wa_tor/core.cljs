@@ -30,5 +30,5 @@
 (defn ^:after-load on-reload []
   (mount-app-element))
 
-(defn version [] "1.3")
+(defn version [] "1.4-SNAPSHOT")
 (aset js/window "version" wa-tor.core/version)
