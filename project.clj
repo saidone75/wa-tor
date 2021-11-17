@@ -21,6 +21,8 @@
 
   :resource-paths ["target" "resources"]
 
+  :clean-targets ^{:protect false} ["target"]
+
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
             "fig:build" ["trampoline" "run" "-m" "figwheel.main" "-b" "wa-tor" "-r"]
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "wa-tor"]}
