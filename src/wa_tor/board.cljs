@@ -33,6 +33,8 @@
 (swap! board assoc :starve 3)
 ;; extra randomness active by default
 (swap! board assoc :random true)
+;; trails
+(swap! board assoc :trails false)
 
 ;; stats
 (defonce stats (atom {}))
@@ -55,7 +57,8 @@
 
 (defn- randomize-board! []
   (clear-stats!)
-  (swap! board assoc :board (logic/randomize-board! (dissoc @board :board))))
+  (swap! board assoc :current-board (logic/randomize-board! (dissoc @board :current-board)))
+  (swap! board assoc :prev-board (:current-board @board)))
 
 (defn- toggle-modal [id]
   (-> (.getElementById js/document id) (aget "classList") (.toggle "show-modal")))
@@ -70,11 +73,11 @@
     (let [x (quot (-> e (aget "nativeEvent") (aget "layerX")) blocksize)
           y (quot (-> e (aget "nativeEvent") (aget "layerY")) blocksize)
           id (+ x (* y (:w @board)))
-          type (:type (get (:board @board) id))]
+          type (:type (get (:current-board @board) id))]
       (cond
-        (= type 'fish) (swap! board assoc :board (assoc (:board @board) id {:type 'shark :age 0 :starve 0}))
-        (= type 'shark) (swap! board assoc :board (assoc (:board @board) id nil))
-        :else (swap! board assoc :board (assoc (:board @board) id {:type 'fish :age 0}))))))
+        (= type 'fish) (swap! board assoc :current-board (assoc (:current-board @board) id {:type 'shark :age 0 :starve 0}))
+        (= type 'shark) (swap! board assoc :current-board (assoc (:current-board @board) id nil))
+        :else (swap! board assoc :current-board (assoc (:current-board @board) id {:type 'fish :age 0}))))))
 
 (defn slider [reference key value min max width step]
   [:input {:type "range" :value value :min min :max max
@@ -124,13 +127,25 @@
     [:div
      "Shark starve after: " [:b (:starve @board)] " chronons w/o food" [:br]
      [slider board :starve (:starve @board) 1 20]]
-    "Extra randomness: " [:b (if (:random @board) "on" "off")] [:br]
-    "off"
-    [:label {:class "switch"}
-     [checkbox board :random]
-     [:span {:class "slider"}]]
-    "on"
-    [:br]
+    [:table {:class "switches"}
+     [:tbody
+      [:tr
+       [:td {:class "switches"}
+        "Extra randomness: " [:b (if (:random @board) "on" "off")] [:br]
+        "off"
+        [:label {:class "switch"}
+         [checkbox board :random]
+         [:span {:class "slider"}]]
+        "on"
+        [:br]]
+       [:td {:class "switches"}
+        "Show trails: " [:b (if (:trails @board) "on" "off")] [:br]
+        "off"
+        [:label {:class "switch"}
+         [checkbox board :trails]
+         [:span {:class "slider"}]]
+        "on"
+        [:br]]]]]
     [:hr]
     "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
     "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
@@ -175,7 +190,7 @@
     [:span {:class "close-button"
             :onClick #(toggle-modal "stats")} "[X]"]
     [:b [:pre "   STATS"]]
-    (let [[sharks fish] (map count (logic/sh-fi (:board @board)))]
+    (let [[sharks fish] (map count (logic/sh-fi (:current-board @board)))]
       (set! history (vec (drop 1 (conj history [fish sharks]))))
       [:div
        (stats-graph)
@@ -198,7 +213,7 @@
     [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]))
 
 (defn- redraw-board []
-  (let [{w :w board :board} @board]
+  (let [{w :w current-board :current-board prev-board :prev-board} @board]
     (run!
      #(block
        (* blocksize (mod (key %) w))
@@ -206,21 +221,29 @@
        (cond
          (= 'fish (:type (val %))) "gold"
          (= 'shark (:type (val %))) "lightslategray"
-         :else "aqua"))
-     board)))
+         :else (cond
+                 (and (true? (:trails @board)) (= 'fish (:type (get prev-board (key %))))) "#99ff99"
+                 (and (true? (:trails @board)) (= 'shark (:type (get prev-board (key %))))) "#33cccc"
+                 :else "aqua")))
+     current-board)))
 
 (defn- clear-board! []
   (clear-stats!)
   (swap! state assoc :start false) 
-  (swap! board assoc :board
+  (swap! board assoc :current-board
+         ;; set all elements to nil
+         (apply merge (map array-map (range area))))
+  (swap! board assoc :prev-board
          ;; set all elements to nil
          (apply merge (map array-map (range area)))))
 
 (defn- update-board! []
   (when (:start @state)
-    (let [[prev-sharks prev-fish] (logic/sh-fi (:board @board))
+    (let [[prev-sharks prev-fish] (logic/sh-fi (:current-board @board))
           ;; actual update happens here
-          [sharks fish] (logic/sh-fi (:board (swap! board assoc :board (logic/next-chronon @board))))]
+          [sharks fish] (logic/sh-fi (:current-board (do
+                                                       (swap! board assoc :prev-board (:current-board @board))
+                                                       (swap! board assoc :current-board (logic/next-chronon @board)))))]
       (set! chronon (inc chronon))
       ;; pause the game if the board is unchanged from last chronon
       (when (and (= sharks prev-sharks)
