@@ -221,8 +221,8 @@
        (cond
          (= 'fish (:type (val %))) "gold"
          (= 'shark (:type (val %))) "lightslategray"
-         (and (true? (:trails @board)) (= 'fish (:type (get prev-board (key %))))) "#99ff99"
-         (and (true? (:trails @board)) (= 'shark (:type (get prev-board (key %))))) "#33cccc"
+         (and (:trails @board) (= 'fish (:type (get prev-board (key %))))) "#99ff99"
+         (and (:trails @board) (= 'shark (:type (get prev-board (key %))))) "#33cccc"
          :else "aqua"))
      current-board)))
 
