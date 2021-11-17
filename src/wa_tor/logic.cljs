@@ -108,7 +108,7 @@
 ;; compute board for next chronon
 (defn next-chronon [current-board]
   ;; state map for not carrying around too many parameters
-  (set! state (dissoc current-board :current-board))
+  (set! state (dissoc current-board :current-board :prev-board))
   ;; set local board work copy
   (reset! board (:current-board current-board))
   (let [[sharks fish] (map shuffle (sh-fi @board))]
