@@ -295,7 +295,9 @@
   ;; a watch will take care of redraw on board change
   (add-watch board :board #(redraw-board))
   ;; call update-board! every 125 ms
-  (swap! state assoc :interval (js/setInterval update-board! 125)))
+  (swap! state assoc :interval (js/setInterval update-board! 125))
+  ;; show control panel
+  (toggle-modal "usage"))
 
 (defn create-board! []
   (when (nil? (:board @board))

@@ -42,12 +42,13 @@ div.modal-content a {
 }
 
 div.modal-content-small {
-    opacity: 80%;
+    opacity: 85%;
     font-size: 10px;
     width: 90%;
 }
 
 div.modal-content-large {
+    opacity: 85%;
     width: 40%;
 }
 
