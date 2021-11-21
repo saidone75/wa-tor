@@ -58,6 +58,7 @@
 (defn- randomize-board! []
   (clear-stats!)
   (swap! board assoc :current-board (logic/randomize-board! (dissoc @board :current-board)))
+  ;; extra board for trails
   (swap! board assoc :prev-board (:current-board @board)))
 
 (defn- toggle-modal [id]
@@ -221,6 +222,7 @@
        (cond
          (= 'fish (:type (val %))) "gold"
          (= 'shark (:type (val %))) "lightslategray"
+         ;; if on sea then check previous board for trails
          (and (:trails @board) (= 'fish (:type (get prev-board (key %))))) "#99ff99"
          (and (:trails @board) (= 'shark (:type (get prev-board (key %))))) "#33cccc"
          :else "aqua"))

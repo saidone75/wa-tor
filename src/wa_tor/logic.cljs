@@ -7,7 +7,7 @@
 ;; plain map, set on next-chronon function
 (def state {})
 
-;;normally distributed random int
+;;normally distributed random int using Box–Muller transform
 (defn- normal-random-int []
   (Math/round
    (* (Math/cos (* 2 Math/PI (rand)))
