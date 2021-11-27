@@ -14,6 +14,7 @@
 (defn board []
   [:div {:class "outer-div"}
    [:div.board {:id "board"}
+    (board/splash)
     (board/usage-panel)
     (board/stats-panel)
     (board/draw-board)]])

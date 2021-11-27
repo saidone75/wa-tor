@@ -93,6 +93,23 @@
            :onChange (fn []
                        (swap! reference assoc key (not (key @reference))))}])
 
+(defn splash []
+  [:div.modal {:id "splash" }
+   [:div.modal-content {:class (let [ratio (/ window-width window-height)]
+                                 (if (> ratio 1)
+                                   "splash-content-large"
+                                   "splash-content-small"))}
+    [:span {:class "close-button"
+            :onClick #(toggle-modal "splash")} "[X]"]
+    [:h1 "Wa-Tor"]
+    [:h3 "A population dynamics simulation devised by A.K. Dewdney"]
+    [:h4 "Press P or swipe up to show the control panel"]
+    "Implemented in ClojureScript/ReactJS" [:br] [:br]
+    "Based on "[:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "the original article"] " appeared on the December 1984 issue of Scientific American" [:br] [:br]
+    "You can grab the source code and leave feedback " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br] [:br]
+    "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"] [:br] [:br]
+    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"]]])
+
 (defn usage-panel []
   [:div.modal {:id "usage"}
    [:div.modal-content {:class (let [ratio (/ window-width window-height)]
@@ -108,8 +125,9 @@
       [:tr [:td "pause/resume"] [:td "spacebar"] [:td "two fingers tap"]]
       [:tr [:td "clear board"] [:td "C"] [:td "swipe left"]]
       [:tr [:td "randomize board"] [:td "R"] [:td "swipe right"]]
-      [:tr [:td "toggle usage panel"] [:td "H"] [:td "swipe up"]]
-      [:tr [:td "show stats"] [:td "S"] [:td "long touch (> 2s)"]]]]
+      [:tr [:td "toggle usage panel"] [:td "P"] [:td "swipe up"]]
+      [:tr [:td "show stats"] [:td "S"] [:td "long touch (> 2s)"]]]
+     ]
     [:br]
     "when paused click/tap a square to cycle between" [:br]
     "water >>> fish >>> shark" [:br] [:br]
@@ -146,13 +164,7 @@
          [checkbox board :trails]
          [:span {:class "slider"}]]
         "on"
-        [:br]]]]]
-    [:hr]
-    "More on " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "Wa-Tor"] [:br]
-    "You can grab the source code " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br]
-    "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"] [:br]
-    "Copyright (c) 2020-2021 " [:a {:href "https://saidone.org"} "Saidone"]
-    [:hr]]])
+        [:br]]]]]]])
 
 (defn- stats-graph []
   [:svg.stats {:id "svg.stats" :width "100%" :height "100%"}
@@ -257,8 +269,9 @@
   (let [key-code (aget event "keyCode")]
     (cond
       (= 32 key-code) (swap! state assoc :start (not (:start @state)))
+      (= 65 key-code) (toggle-modal "splash")
       (= 67 key-code) (clear-board!)
-      (= 72 key-code) (toggle-modal "usage")
+      (= 80 key-code) (toggle-modal "usage")
       (= 82 key-code) (randomize-board!)
       (= 83 key-code) (toggle-modal "stats"))))
 
@@ -299,7 +312,7 @@
   ;; call update-board! every 125 ms
   (swap! state assoc :interval (js/setInterval update-board! 125))
   ;; show control panel
-  (toggle-modal "usage"))
+  (toggle-modal "splash"))
 
 (defn create-board! []
   (when (nil? (:board @board))
