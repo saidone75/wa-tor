@@ -12,7 +12,7 @@
              :archive {:format :tgz :root-dir ""}}
 
   :dependencies [[org.clojure/clojure "1.10.3"]
-                 [org.clojure/clojurescript "1.10.896"]
+                 [org.clojure/clojurescript "1.10.914"]
                  [reagent "1.1.0"]
                  [cljsjs/react "17.0.2-0"]
                  [cljsjs/react-dom "17.0.2-0"]]
