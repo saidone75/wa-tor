@@ -13,7 +13,7 @@
 
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.clojure/clojurescript "1.11.4"]
-                 [reagent "1.1.0"]
+                 [reagent "1.1.1"]
                  [cljsjs/react "18.0.0-rc.0-0"]
                  [cljsjs/react-dom "18.0.0-rc.0-0"]]
 
@@ -27,5 +27,5 @@
             "fig:build" ["trampoline" "run" "-m" "figwheel.main" "-b" "wa-tor" "-r"]
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "wa-tor"]}
 
-  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.15"]
+  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.16"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]}})
