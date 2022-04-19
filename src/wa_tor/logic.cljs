@@ -1,4 +1,4 @@
-;; Copyright (c) 2020-2021 Saidone
+;; Copyright (c) 2020-2022 Saidone
 
 (ns wa-tor.logic)
 
