@@ -71,8 +71,8 @@
 (defn- toggle [e]
   (if (:start @state)
     (toggle-modal "usage")
-    (let [x (quot (-> e (aget "nativeEvent") (aget "layerX")) blocksize)
-          y (quot (-> e (aget "nativeEvent") (aget "layerY")) blocksize)
+    (let [x (quot (-> e (aget "nativeEvent") (aget "offsetX")) blocksize)
+          y (quot (-> e (aget "nativeEvent") (aget "offsetY")) blocksize)
           id (+ x (* y (:w @board)))
           type (:type (get (:current-board @board) id))]
       (cond
@@ -303,9 +303,18 @@
         (> xdistance swipe-threshold) (randomize-board!)
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
+(def ctx-options
+  #js {
+       :alpha false
+       :desynchronized true
+       })
+
 (defn- dom-content-loaded []
   ;; set context for board canvas
-  (set! ctx (.getContext (.getElementById js/document "canvas") "2d"))
+  (set! ctx (.getContext (.getElementById js/document "canvas") "2d" ctx-options))
+  ;; fill the canvas white
+  (set! (.-fillStyle ctx) "white")
+  (.fillRect ctx 0 0 (* (:w @board) blocksize) (* (:h @board) blocksize))
   (swap! state assoc :start true)
   ;; a watch will take care of redraw on board change
   (add-watch board :board #(redraw-board))
