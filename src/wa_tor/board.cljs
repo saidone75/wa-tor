@@ -304,10 +304,10 @@
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
 (def ctx-options
-  #js {
-       :alpha false
-       :desynchronized true
-       })
+  (clj->js {
+            :alpha false
+            :desynchronized true
+            }))
 
 (defn- dom-content-loaded []
   ;; set context for board canvas
