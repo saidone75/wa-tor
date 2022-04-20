@@ -1,4 +1,4 @@
-(defproject wa-tor "1.4-SNAPSHOT"
+(defproject wa-tor "1.4"
   :description "A population dynamics simulation devised by A.K. Dewdney."
   :url "http://wa-tor.saidone.org"
   :license {:name "MIT"

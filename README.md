@@ -13,7 +13,7 @@ Live version [here](http://wa-tor.saidone.org)
 * spacebar or "two fingers tap" to pause/resume the game
 * "C" or "swipe left" to clear the board and pause the game
 * "R" or "swipe right" to reset the board with the current parameters
-* "H" or "swipe up" to toggle the control panel
+* "P" or "swipe up" to toggle the control panel
 * "S" or "long touch" (> 2s) to show statistics
 
 When paused click on a square to cycle between water >>> fish >>> shark
@@ -39,7 +39,7 @@ $ lein do clean, fig:min, assemble
 [Figwheel] figwheel-main.edn is valid \(ツ)/
 [Figwheel] Compiling build wa-tor to "resources/public/wa-tor.js"
 [...]
-Writing  target  ->  wa-tor-1.3-archive.tgz
+Writing  target  ->  wa-tor-1.4-archive.tgz
 Done creating assembly
 ```
 
