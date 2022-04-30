@@ -225,19 +225,29 @@
   (let [{w :w h :h} @board]
     [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]))
 
+(defn- fill-aqua []
+  (set! (.-fillStyle ctx) "aqua")
+  (.fillRect ctx 0 0 (* (:w @board) blocksize) (* (:h @board) blocksize)))
+
 (defn- redraw-board []
   (let [{w :w current-board :current-board prev-board :prev-board} @board]
+    (fill-aqua)
     (run!
-     #(block
-       (* blocksize (mod (key %) w))
-       (* blocksize (quot (key %) w))
-       (cond
-         (= 'fish (:type (val %))) "gold"
-         (= 'shark (:type (val %))) "lightslategray"
-         ;; if on sea then check previous board for trails
-         (and (:trails @board) (= 'fish (:type (get prev-board (key %))))) "#99ff99"
-         (and (:trails @board) (= 'shark (:type (get prev-board (key %))))) "#33cccc"
-         :else "aqua"))
+     #(if-not (nil? (:type (val %)))
+        (block
+         (* blocksize (mod (key %) w))
+         (* blocksize (quot (key %) w))
+         (cond
+           (= 'fish (:type (val %))) "gold"
+           (= 'shark (:type (val %))) "lightslategray"))
+        ;; if on sea then check previous board for trails
+        (if (and (:trails @board) (not (nil? (:type (get prev-board (key %))))))
+          (block
+           (* blocksize (mod (key %) w))
+           (* blocksize (quot (key %) w))
+           (cond
+             (= 'fish (:type (get prev-board (key %)))) "#99ff99"
+             (= 'shark (:type (get prev-board (key %)))) "#33cccc"))))
      current-board)))
 
 (defn- clear-board! []
@@ -312,9 +322,8 @@
 (defn- dom-content-loaded []
   ;; set context for board canvas
   (set! ctx (.getContext (.getElementById js/document "canvas") "2d" ctx-options))
-  ;; fill the canvas white
-  (set! (.-fillStyle ctx) "white")
-  (.fillRect ctx 0 0 (* (:w @board) blocksize) (* (:h @board) blocksize))
+  ;; fill the canvas aqua
+  (fill-aqua)
   (swap! state assoc :start true)
   ;; a watch will take care of redraw on board change
   (add-watch board :board #(redraw-board))
