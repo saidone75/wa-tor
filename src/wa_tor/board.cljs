@@ -310,18 +310,10 @@
         (> xdistance swipe-threshold) (randomize-board!)
         (< ydistance (* -1 swipe-threshold)) (toggle-modal "usage")))))
 
-(def ctx-options
-  (clj->js {
-            :alpha true
-            :desynchronized true
-            }))
-
 (defn- dom-content-loaded []
   ;; set context for board canvas
-  (set! ctx (.getContext (.getElementById js/document "canvas") "2d" ctx-options))
-  ;; fill the canvas aqua
-  (set! (.-fillStyle ctx) "aqua")
-  (.fillRect ctx 0 0 (* (:w @board) blocksize) (* (:h @board) blocksize))
+  (set! ctx (.getContext (.getElementById js/document "canvas") "2d"))
+  ;; start simulation
   (swap! state assoc :start true)
   ;; a watch will take care of redraw on board change
   (add-watch board :board #(redraw-board))
