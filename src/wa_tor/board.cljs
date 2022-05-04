@@ -223,15 +223,12 @@
 
 (defn draw-board []
   (let [{w :w h :h} @board]
-    [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]))
-
-(defn- fill-aqua []
-  (set! (.-fillStyle ctx) "aqua")
-  (.fillRect ctx 0 0 (* (:w @board) blocksize) (* (:h @board) blocksize)))
+    [:div {:id "sea" :class "sea" :width (* blocksize w) :height (* blocksize h)}
+     [:canvas {:id "canvas" :width (* blocksize w) :height (* blocksize h) :onClick (fn [e] (toggle e))}]]))
 
 (defn- redraw-board []
   (let [{w :w current-board :current-board prev-board :prev-board} @board]
-    (fill-aqua)
+    (.clearRect ctx 0 0 (* (:w @board) blocksize) (* (:h @board) blocksize))
     (run!
      #(if-not (nil? (:type (val %)))
         (block
@@ -315,7 +312,7 @@
 
 (def ctx-options
   (clj->js {
-            :alpha false
+            :alpha true
             :desynchronized true
             }))
 
@@ -323,7 +320,8 @@
   ;; set context for board canvas
   (set! ctx (.getContext (.getElementById js/document "canvas") "2d" ctx-options))
   ;; fill the canvas aqua
-  (fill-aqua)
+  (set! (.-fillStyle ctx) "aqua")
+  (.fillRect ctx 0 0 (* (:w @board) blocksize) (* (:h @board) blocksize))
   (swap! state assoc :start true)
   ;; a watch will take care of redraw on board change
   (add-watch board :board #(redraw-board))

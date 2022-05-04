@@ -14,6 +14,10 @@ body {
     padding: 4px;
 }
 
+div.sea {
+    background-color: aqua;
+}
+
 div.modal {
     position: fixed;
     left: 0;
