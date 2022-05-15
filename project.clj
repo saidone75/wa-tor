@@ -28,4 +28,5 @@
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "wa-tor"]}
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.17"]
+                                  [org.clojure/data.json "2.4.0"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]}})
