@@ -252,10 +252,10 @@
   (swap! state assoc :start false) 
   (swap! board assoc :current-board
          ;; set all elements to nil
-         (apply merge (map array-map (range area))))
+         (apply merge (map #(array-map % nil) (range area))))
   (swap! board assoc :prev-board
          ;; set all elements to nil
-         (apply merge (map array-map (range area)))))
+         (apply merge (map #(array-map % nil) (range area)))))
 
 (defn- update-board! []
   (when (:start @state)

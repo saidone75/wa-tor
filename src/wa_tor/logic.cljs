@@ -42,7 +42,7 @@
                    (if (contains? fish (first candidates))
                      sharks
                      (conj sharks (first candidates))))))]
-    (reset! board (apply merge (map array-map (range (* w h)))))
+    (reset! board (apply merge (map #(array-map % nil) (range (* w h)))))
     (run!
      ;; random age between 0 and fbreed
      #(swap! board assoc % {:type 'fish :age (rand-int (inc fbreed))})
