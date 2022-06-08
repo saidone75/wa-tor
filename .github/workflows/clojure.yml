@@ -21,3 +21,8 @@ jobs:
       run: lein fig:min
     - name: Package
       run: lein assemble
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: wa-tor-SNAPSHOT.tgz
+        path: target/*.tgz
