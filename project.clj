@@ -12,10 +12,10 @@
              :archive {:format :tgz :root-dir ""}}
 
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [org.clojure/clojurescript "1.11.54"]
+                 [org.clojure/clojurescript "1.11.60"]
                  [reagent "1.1.1"]
-                 [cljsjs/react "18.0.0-rc.0-0"]
-                 [cljsjs/react-dom "18.0.0-rc.0-0"]]
+                 [cljsjs/react "18.2.0-0"]
+                 [cljsjs/react-dom "18.2.0-0"]]
 
   :source-paths ["src"]
 
