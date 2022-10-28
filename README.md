@@ -4,9 +4,9 @@ A population dynamics simulation devised by A.K. Dewdney, loosely mimicking the 
 
 Based on [the original article](https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf) appeared on the December 1984 issue of Scientific American
 
-Live version [here](http://wa-tor.saidone.org)
+Live version [here](https://wa-tor.saidone.org)
 
-[![wa-tor](https://i.postimg.cc/Dw2t9XQt/wa-tor.gif)](http://wa-tor.saidone.org/)
+[![wa-tor](https://i.postimg.cc/Dw2t9XQt/wa-tor.gif)](https://wa-tor.saidone.org/)
 
 ## Usage
 
@@ -20,9 +20,9 @@ When paused click on a square to cycle between water >>> fish >>> shark
 
 From the control panel you can set the initial number of fish and sharks, their breeding thresholds, sharks lifespan without food and extra randomness for thresholds:
 
-[![control-panel](https://i.postimg.cc/nLX8B70b/wa-tor-control-panel.gif)](http://wa-tor.saidone.org)
+[![control-panel](https://i.postimg.cc/nLX8B70b/wa-tor-control-panel.gif)](https://wa-tor.saidone.org)
 
-[![stats](https://i.postimg.cc/6QXB2gtv/wa-tor-stats.gif)](http://wa-tor.saidone.org)
+[![stats](https://i.postimg.cc/6QXB2gtv/wa-tor-stats.gif)](https://wa-tor.saidone.org)
 
 ## Deploy your own
 
