@@ -13,9 +13,9 @@
 
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.11.60"]
-                 [reagent "1.1.1"]
-                 [cljsjs/react "18.2.0-0"]
-                 [cljsjs/react-dom "18.2.0-0"]]
+                 [reagent "1.2.0"]
+                 [cljsjs/react "18.2.0-1"]
+                 [cljsjs/react-dom "18.2.0-1"]]
 
   :source-paths ["src"]
 
