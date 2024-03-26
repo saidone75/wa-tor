@@ -1,4 +1,4 @@
-;; Copyright (c) 2020-2022 Saidone
+;; Copyright (c) 2020-2024 Saidone
 
 (ns wa-tor.board
   (:require
@@ -61,8 +61,14 @@
   ;; extra board for trails
   (swap! board assoc :prev-board (:current-board @board)))
 
+;; used to display only one modal at a time
+(defonce modals-visible (atom {}))
+
 (defn- toggle-modal [id]
-  (-> (.getElementById js/document id) (aget "classList") (.toggle "show-modal")))
+  (when (or (every? false? (vals @modals-visible))
+            (get @modals-visible id))
+    (swap! modals-visible assoc id (not (get @modals-visible id)))
+    (-> (.getElementById js/document id) (aget "classList") (.toggle "show-modal"))))
 
 (defn- show-stats []
   (when-not (= "modal show-modal" (-> (.getElementById js/document "usage") (aget "classList") (aget "value")))
@@ -108,7 +114,7 @@
     "Based on "[:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "the original article"] " appeared on the December 1984 issue of Scientific American" [:br] [:br]
     "You can grab the source code and leave feedback " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"] [:br] [:br]
-    "Copyright (c) 2020-2022 " [:a {:href "https://saidone.org"} "Saidone"]]])
+    "Copyright (c) 2020-2024 " [:a {:href "https://saidone.org"} "Saidone"]]])
 
 (defn usage-panel []
   [:div.modal {:id "usage"}
