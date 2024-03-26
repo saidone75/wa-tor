@@ -46,6 +46,6 @@ Done creating assembly
 then just copy/expand the archive into a web server
 
 ## License
-Copyright (c) 2020-2022 Saidone
+Copyright (c) 2020-2024 Saidone
 
 Distributed under the MIT License
