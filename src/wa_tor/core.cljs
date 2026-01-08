@@ -1,4 +1,4 @@
-;; Copyright (c) 2020-2025 Saidone
+;; Copyright (c) 2020-2026 Saidone
 
 (ns ^:figwheel-hooks wa-tor.core
   (:require
