@@ -6,7 +6,7 @@
 
   :min-lein-version "2.7.1"
 
-  :plugins [[com.chartbeat.cljbeat/lein-assemble "0.1.2"]]
+  :plugins [[com.chartbeat.cljbeat/lein-assemble "0.1.4"]]
 
   :assemble {:filesets {"htdocs" [["resources/public/*"]]}
              :archive {:format :tgz :root-dir ""}}
