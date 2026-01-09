@@ -114,7 +114,7 @@
     "Based on "[:a {:href "https://github.com/saidone75/wa-tor/blob/master/wator_dewdney.pdf"} "the original article"] " appeared on the December 1984 issue of Scientific American" [:br] [:br]
     "You can grab the source code and leave feedback " [:a {:href "https://github.com/saidone75/wa-tor"} "here"] [:br] [:br]
     "Distributed under the " [:a {:href "https://github.com/saidone75/wa-tor/blob/master/LICENSE"} "MIT License"] [:br] [:br]
-    "Copyright (c) 2020-2025 " [:a {:href "https://saidone.org"} "Saidone"]]])
+    "Copyright (c) 2020-2026 " [:a {:href "https://saidone.org"} "Saidone"]]])
 
 (defn usage-panel []
   [:div.modal {:id "usage"}
