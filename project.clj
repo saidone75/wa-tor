@@ -11,8 +11,8 @@
   :assemble {:filesets {"htdocs" [["resources/public/*"]]}
              :archive {:format :tgz :root-dir ""}}
 
-  :dependencies [[org.clojure/clojure "1.12.4"]
-                 [org.clojure/clojurescript "1.12.134"]
+  :dependencies [[org.clojure/clojure "1.12.5"]
+                 [org.clojure/clojurescript "1.12.145"]
                  [reagent "2.0.1"]
                  [cljsjs/react "18.3.1-1"]
                  [cljsjs/react-dom "18.3.1-1"]]
