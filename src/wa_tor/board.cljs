@@ -182,7 +182,7 @@
            sw 3]
        (reset! line-id 0)
        (loop [history (take-last (:history-window @stats) history) x 0 lines '()]
-         (if (> 2 (count history)) lines
+         (if-not (next history) lines
              (recur (drop 1 history) (+ x stepx)
                     (conj lines
                           ^{:key (swap! line-id inc)}
@@ -261,11 +261,13 @@
 
 (defn- update-board! []
   (when (:start @state)
-    (let [[prev-sharks prev-fish] (logic/sh-fi (:current-board @board))
+    (let [board-state @board
+          previous-board (:current-board board-state)
+          [prev-sharks prev-fish] (logic/sh-fi previous-board)
           ;; actual update happens here
-          [sharks fish] (logic/sh-fi (:current-board (do
-                                                       (swap! board assoc :prev-board (:current-board @board))
-                                                       (swap! board assoc :current-board (logic/next-chronon @board)))))]
+          current-board (logic/next-chronon board-state)
+          [sharks fish] (logic/sh-fi current-board)]
+      (swap! board assoc :prev-board previous-board :current-board current-board)
       (set! chronon (inc chronon))
       ;; pause the game if the board is unchanged from last chronon
       (when (and (= sharks prev-sharks)
